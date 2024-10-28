@@ -14,6 +14,8 @@ const admin = require('firebase-admin');
 const serviceAccount = require('./bot-e5092-firebase-adminsdk-n1rf1-d5e77f04c2.json');
 const fs = require('fs');
 const gTTS = require('gtts');
+const os = require('os');
+const path = require('path');
 console.log("this works2"); // << I have not tried this console.log yet
 
 const createScript = require("./utils/createScript");
@@ -78,29 +80,32 @@ exports.helloWorld = onRequest(async (request, response) => {
     // } while (title.length > 100); // repeats if title is too long (might change later)
 
     currentTime = getCurrentDateTime(); // get time to name files
-    localFilePath = "/tmp/scripttest.mp3";
+    // localFilePath = "/tmp/scripttest.mp3";
+    tmpPath = path.join(os.tmpdir(), "testasdf" + currentTime + ".mp3");
     console.log("basic stuff completed5");
 
     // TODO: for testing 
-    const responseFromGemini = "hi there my name is will and I have made progress";
+    const responseFromGemini = "look at me my project is finally taking shape finally this has taken so long I am so happy wheeeeeeeeeeeee";
 
     console.log("basic stuff completed");
 
     try {
 
         // 1) script 2) file path
-        await generateTTS(responseFromGemini, localFilePath);
+        await generateTTS(responseFromGemini, tmpPath);
 
         console.log("generateTTS completed");
+        console.log(tmpPath);
 
         // uploads .mp3 file to firebase bucket
-        await speechUpload(localFilePath, currentTime, bucket);
+        // await speechUpload(localFilePath, currentTime, bucket);
 
         console.log("speechUpload completed");
 
         // https://www.gyan.dev/ffmpeg/builds/ <-- if we decide on something else later
         // generated/texttospeech${currentTime}.mp3, "minecraft.mp4", "generated/edited" + currentTime + ".mp4" 
-        // editVideo(`generated/texttospeech${currentTime}.mp3`, "generated/minecraft.mp4", "generated/edited" + currentTime + ".mp4" ); // TODO once you come back pathToGeneratedAudio, videoPath, outputPath
+        // editVideo(`generated/texttospeech10_27_2024_05_18_28.mp3`, "generated/minecraft.mp4", `generated/edited${currentTime}.mp3` ); // TODO once you come back pathToGeneratedAudio, videoPath, outputPath
+        editVideo(tmpPath, path.join(os.tmpdir(), "minecraft.mp4"), path.join(os.tmpdir(), "edited" + currentTime + ".mp4") ); // TODO once you come back pathToGeneratedAudio, videoPath, outputPath
         
         response.send("works")
 
@@ -108,7 +113,7 @@ exports.helloWorld = onRequest(async (request, response) => {
         console.error("Failed to upload file:", error);
         res.status(500).send("Failed to upload file.");
     } finally {
-        fs.unlinkSync(localFilePath);
+        // fs.unlinkSync(tmpPath);
     }
 
 });
