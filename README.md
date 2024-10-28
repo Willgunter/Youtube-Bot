@@ -1,6 +1,21 @@
 # Youtube-Bot
 A bot that creates shorts content and automatically uploads them to platforms
+
+checklist:
+    - integrate with google gemini for script✅
+    - use gtts for text-to-speech ✅
+    - use something better (elevenLabs) for text-to-speech
+    - combine speech + audio into a video✅
+    - edit video (idk what specific things)
+    - figure out how to edit video really well for viewer engagement (stretch goal if this ends up working)
+    - add subtitles
+    - figure out how to fetch random clips + validate they are Creative Commons
+    certified
+    - upload to youtube
+    - figure out deployment with GCP
+
 commands:
+
     // runs locally
     // run from root of project?
     firebase emulators:start
