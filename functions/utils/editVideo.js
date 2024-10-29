@@ -12,17 +12,29 @@ ffmpeg.setFfprobePath('../../bin/ffmpeg-7.0.2-amd64-static/ffmpeg-master-latest-
 async function editVideo(audioPath, videoPath, outputPath) {
                     // texttospeech+, minecraft, edited+
         
-        const audioSpeed = 1;
+        // MUST BE BETWEEN 0.5 and 2.0
+        // (can chain more together if necessary tho)
+        // .audioFilters(`atempo=0.5,atempo=0.5) etc..
+        const audioSpeed = .6;
     
         // Step 1: Adjust Audio Speed
         const tempAudioPath = 'temp_audio.mp3';
+        // const [targetWidth, targetHeight] = [1080, 1920];
+        const [targetWidth, targetHeight] = [100, 100];
 
+        // const scaleFilter = `scale=if(gte(iw/ih,${targetWidth}/${targetHeight}),-1,${targetHeight}):if(gte(iw/ih,${targetWidth}/${targetHeight}),${targetWidth},-1)`;
+        // const cropFilter = `crop=${targetWidth}:${targetHeight}`;
+        const cropFilter = `crop=${targetWidth}:${targetHeight}`; // width, height
+        console.log() // log size of 
         return new Promise((resolve, reject) => {
             ffmpeg(videoPath)
               .audioCodec('aac') // Set the audio codec
               .input(audioPath) // Add the audio file as input
+              .audioFilters(`atempo=${audioSpeed}`)
               .outputOptions('-shortest') // Stop when the shortest stream ends
+              .videoFilters(cropFilter)//,${scaleFilter}`)
               .save(outputPath) // Save the output file
+              // await new Promise(resolve => setTimeout(resolve, 20000)); // 20 seconds
               .on('end', () => {
                 console.log(`Successfully combined audio and video. Output saved to: ${outputPath}`);
                 resolve(outputPath);
@@ -33,7 +45,6 @@ async function editVideo(audioPath, videoPath, outputPath) {
               });
           });
 
-        // await new Promise(resolve => setTimeout(resolve, 20000)); // 20 seconds
         
         // try downloading file from firebase first
         // into tmp directory (see "Youtube Bot Project")

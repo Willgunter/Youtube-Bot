@@ -5,12 +5,14 @@ checklist:
     - integrate with google gemini for script✅
     - use gtts for text-to-speech ✅
     - use something better (elevenLabs) for text-to-speech
-    - combine speech + audio into a video✅
-    - edit video (idk what specific things)
+    - editing
+        - combine speech + audio into a video✅
+        - crop video to 16:9 or whatever --> come back to once
+            I find a source of videos
+        - figure out how to fetch random clips + validate they are Creative Commons certified
+        - edit video (idk what specific things)
     - figure out how to edit video really well for viewer engagement (stretch goal if this ends up working)
-    - add subtitles
-    - figure out how to fetch random clips + validate they are Creative Commons
-    certified
+    - add subtitles✅
     - upload to youtube
     - figure out deployment with GCP
 

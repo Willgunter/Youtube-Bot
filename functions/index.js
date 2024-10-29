@@ -10,6 +10,10 @@ console.log("this works1"); // << I have not tried this console.log yet
 const { onRequest } = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 
+// import axios, { AxiosError } from 'axios'
+const axios = require("axios")
+// import fs from 'fs-extra'
+const fsExtra = require('fs-extra')
 const admin = require('firebase-admin');
 const serviceAccount = require('./bot-e5092-firebase-adminsdk-n1rf1-d5e77f04c2.json');
 const fs = require('fs');
@@ -23,6 +27,7 @@ const getCurrentDateTime = require("./utils/currentDateTime");
 const generateTTS = require("./utils/generateTTS");
 const speechUpload = require("./utils/speechUpload");
 const editVideo = require("./utils/editVideo");
+const transcribeVideo = require("./utils/transcribeVideo");
 
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
@@ -61,6 +66,73 @@ console.log("this works4"); // << I have not tried this console.log yet
 
 exports.helloWorld = onRequest(async (request, response) => {
     
+    const headers = {
+        "authorization": process.env.ASSEMBLYAI,
+        "Content-Type": "audio/mp3",
+    }
+    
+    async function uploadToAssemblyAI(filePath) {
+        const audioData = await fsExtra.readFile(filePath);
+        let responseFromAssembly;
+        try {
+            responseFromAssembly = await axios.post("https://api.assemblyai.com/v2/upload", audioData, { headers } );
+            return responseFromAssembly.data;
+        } catch (error) {
+            console.error("uploadToAssemblyAI Error:", error);
+        }
+    }
+
+    async function requestTranscription(uploadUrl) {
+        const data = {
+            audio_url: uploadUrl
+        }
+        const responseFromTranscript = await axios.post("https://api.assemblyai.com/v2/transcript", data, {headers});
+        return responseFromTranscript.data.id;
+    }
+
+    async function pollTranscription(transcriptionId) {
+        let transcriptionResult;
+        
+        const statusUrl = `https://api.assemblyai.com/v2/transcript/${transcriptionId}`;
+        
+        while (true) {
+            
+            const responseFromPoll = await axios.get(statusUrl, {headers: headers, });
+            
+            transcriptionResult = responseFromPoll.data
+
+            if (transcriptionResult.status === "completed") { 
+                break; 
+            }
+            else if (transcriptionResult.status === "failed") { 
+                throw new Error(`Transcription failed: ${transcriptionResult.error}`);
+            }
+            await new Promise((resolve) => setTimeout(resolve, 5000)); // Poll every 5 seconds 
+        }
+        return transcriptionResult;
+    }
+
+    async function getSubtitleFile(transcriptId, fileFormat) {
+
+        if (!['srt', 'vtt'].includes(fileFormat)) {
+            throw new Error(
+              `Unsupported file format: ${fileFormat}. Please specify 'srt' or 'vtt'.`
+            )
+          }
+        
+          const url = `https://api.assemblyai.com/v2/transcript/${transcriptId}/${fileFormat}`
+        
+          try {
+            const response = await axios.get(url, { headers })
+            return response.data
+          } catch (error) {
+            throw new Error(
+              `Failed to retrieve ${fileFormat.toUpperCase()} file: ${error.response
+                ?.status} ${error.response?.data?.error}`
+            )
+          }
+    }
+
     let script;
     let title = "";
 
@@ -85,7 +157,7 @@ exports.helloWorld = onRequest(async (request, response) => {
     console.log("basic stuff completed5");
 
     // TODO: for testing 
-    const responseFromGemini = "look at me my project is finally taking shape finally this has taken so long I am so happy wheeeeeeeeeeeee";
+    const responseFromGemini = "look at me my project is starting to finally take shape finally this has taken so long I am so happy wheee eeeeeeeeee wheeeeeeee eeeee wheeeeeeeeeeeee";
 
     console.log("basic stuff completed");
 
@@ -105,13 +177,48 @@ exports.helloWorld = onRequest(async (request, response) => {
         // https://www.gyan.dev/ffmpeg/builds/ <-- if we decide on something else later
         // generated/texttospeech${currentTime}.mp3, "minecraft.mp4", "generated/edited" + currentTime + ".mp4" 
         // editVideo(`generated/texttospeech10_27_2024_05_18_28.mp3`, "generated/minecraft.mp4", `generated/edited${currentTime}.mp3` ); // TODO once you come back pathToGeneratedAudio, videoPath, outputPath
-        editVideo(tmpPath, path.join(os.tmpdir(), "minecraft.mp4"), path.join(os.tmpdir(), "edited" + currentTime + ".mp4") ); // TODO once you come back pathToGeneratedAudio, videoPath, outputPath
+        await editVideo(tmpPath, path.join(os.tmpdir(), "minecraft.mp4"), path.join(os.tmpdir(), "edited" + currentTime + ".mp4") ); // TODO once you come back pathToGeneratedAudio, videoPath, outputPath
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        // transcribe video
+        // transcribeVideo(path.join(os.tmpdir(), "edited" + currentTime + ".mp4"), path.join(os.tmpdir(), "transcription.srt"));
+        // TRANSCRIBE VIDEO
         
+// async function transcribeVideo(path.join(os.tmpdir(), "edited" + currentTime + ".mp4"), path.join(os.tmpdir(), "transcription.srt")) {
+    try { // Step 1: Upload the video file to AssemblyAI 
+        const videoFilePath = path.join(os.tmpdir(), "edited" + currentTime + ".mp4");
+        const srtOutputPath = path.join(os.tmpdir(), `transcription${currentTime}.srt`);
+        const uploadResponse = await uploadToAssemblyAI(tmpPath);
+        const uploadUrl = uploadResponse.upload_url; // verified that it works
+        
+        // Step 2: Request transcription
+        const transcriptionId = await requestTranscription(uploadUrl);
+        console.log("transcriptionid: " + transcriptionId);
+
+        // Step 3: Poll for transcription completion
+        const transcriptionResult = await pollTranscription(transcriptionId);
+
+        // Step 4: Export transcription to SRT format
+        const subtitles = await getSubtitleFile(
+            transcriptionId,
+            'srt'
+        )
+        
+        fsExtra.writeFile(srtOutputPath, subtitles);
+
+        console.log(`Transcription saved to: ${srtOutputPath}`);
+        return srtOutputPath;
+    } catch (error) {
+        console.error("Error during transcription:", error);
+    }
+
+// }
+
+        // TRANSCRIBE VIDEO
         response.send("works")
 
     } catch (error) {
         console.error("Failed to upload file:", error);
-        res.status(500).send("Failed to upload file.");
+        response.status(500).send("Failed to upload file.");
     } finally {
         // fs.unlinkSync(tmpPath);
     }
@@ -143,7 +250,3 @@ exports.helloWorld = onRequest(async (request, response) => {
 //         video_path, srt_path, f"generated/final_{formatted_now}.mp4"
 //     )
 //     final_short_path = shorten_video_if_needed(final_video_path)
-
-
-// if __name__ == "__main__":
-//     main()
