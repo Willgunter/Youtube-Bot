@@ -17,6 +17,14 @@ checklist:
     - figure out deployment with GCP
     - break up steps between different gcp cloud functions (in same file) so one does not do all the work
 
+current problems / todos:
+    - finish with captions
+        - poke around a little bit with changing time out, but
+        look into breaking up work into other functions (might not be able to do without pub / sub or something)
+        - once timeout starts working, zapcap captions should(???) work which would be good
+        - start looking around for a place for creative commons vertical videos I can use
+        - then finish editing (cropping / padding mainly) if necessary
+
 commands:
 
     // runs locally
