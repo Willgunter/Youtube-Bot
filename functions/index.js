@@ -7,25 +7,30 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 const { onRequest } = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
+// const { logger } from "firebase-functions/logger";
 
-// import axios, { AxiosError } from 'axios'
-const axios = require("axios")
-// import fs from 'fs-extra'
-const fsExtra = require('fs-extra')
-const admin = require('firebase-admin');
+const axios = require("axios");
+const fsExtra = require('fs-extra');
+const ffmpeg = require('fluent-ffmpeg');
+const { ZapCap } = require("zapcap");
+const { pipeline } = require("stream/promises");
+
+// NO @ffmpeg/ffmpeg !!!!!!!!!!!
+
+const admin = require('firebase-admin')
 const serviceAccount = require('./bot-e5092-firebase-adminsdk-n1rf1-d5e77f04c2.json');
 const fs = require('fs');
 const gTTS = require('gtts');
 const os = require('os');
 const path = require('path');
 
-const createScript = require("./utils/createScript");
-const getCurrentDateTime = require("./utils/currentDateTime");
-const generateTTS = require("./utils/generateTTS");
-const speechUpload = require("./utils/speechUpload");
-const editVideo = require("./utils/editVideo");
-const generateSubtitles = require("./utils/generateSubtitles");
+const createScript = require("./utils/createScript.js"); // not using to save on api requests
+const getCurrentDateTime = require('./utils/currentDateTime.js');
+const generateTTS = require('./utils/generateTTS.js');
+const speechUpload = require('./utils/speechUpload.js'); // not using because it is not uploaded to cloud yet
+const editVideo = require('./utils/editVideo.js');
+const generateSubtitles = require('./utils/generateSubtitles.js');
+const addSubtitlesToVideo = require('./utils/addSubtitlesToVideo.js'); // currently working on
 
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
@@ -52,7 +57,8 @@ const bucket = admin.storage().bucket();
 // START OF MAIN STUFF!!!
 
 exports.helloWorld = onRequest(async (request, response) => {
-    
+    // exports.helloWorld = onRequest.runWith({timeoutSeconds: "300s"}).async(async (request, response) => {
+
     let script;
     let title = "";
 
@@ -70,14 +76,11 @@ exports.helloWorld = onRequest(async (request, response) => {
     //         response.status(500).send("An error occurred");
     //     }
     // } while (title.length > 100); // repeats if title is too long (might change later)
+    // TODO: for testing 
     const responseFromGemini = "look at me my project is starting to finally take shape finally this has taken so long I am so happy wheee eeeeeeeeee wheeeeeeee eeeee wheeeeeeeeeeeee";
 
-    currentTime = getCurrentDateTime(); // get time to name files
-    // localFilePath = "/tmp/scripttest.mp3";
-    ttsAudioPath = path.join(os.tmpdir(), "YoutubeBot/ttsAudio" + currentTime + ".mp3");
-    console.log("basic stuff completed5");
-
-    // TODO: for testing 
+    currentTime = getCurrentDateTime();
+    ttsAudioPath = path.join(os.tmpdir(), "YoutubeBotFiles/ttsAudio" + currentTime + ".mp3");
 
     console.log("basic stuff completed");
 
@@ -87,26 +90,68 @@ exports.helloWorld = onRequest(async (request, response) => {
         // generates tts audio
         await generateTTS(responseFromGemini, ttsAudioPath);
 
-        console.log("generateTTS completed");
-        console.log(`tts audio path: ${ttsAudioPath}`);
-
         // uploads .mp3 file to firebase bucket
         // await speechUpload(localFilePath, currentTime, bucket);
         // console.log("speechUpload completed");
 
         // https://www.gyan.dev/ffmpeg/builds/ <-- if we decide on something else later
-        const editedVideoFilePath = path.join(os.tmpdir(), "YoutubeBot/edited" + currentTime + ".mp4");
-        const originalVideoFilePath = path.join(os.tmpdir(), "minecraft.mp4")
-        // generated/texttospeech${currentTime}.mp3, "minecraft.mp4", "generated/edited" + currentTime + ".mp4" 
+        const editedVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/edited" + currentTime + ".mp4");
+        const originalVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/minecraft.mp4")
         // "edits" the video --> applys basic cropping + just combines audio + video for now
-        await editVideo(ttsAudioPath, originalVideoFilePath, editedVideoFilePath );
-        await new Promise((resolve) => setTimeout(resolve, 10000)); // wait 10 seconds for file to be created (could be deleted later maybe)
+        await editVideo(ttsAudioPath, originalVideoFilePath, editedVideoFilePath);
 
         // transcribe video
-        const srtOutputPath = path.join(os.tmpdir(), `YoutubeBot/transcription${currentTime}.srt`);
+        const srtOutputPath = path.join(os.tmpdir(), `YoutubeBotFiles/transcription${currentTime}.srt`);
         await generateSubtitles(editedVideoFilePath, srtOutputPath);
-
         console.log(`Transcription saved to: ${srtOutputPath}`);
+
+        // works until here
+
+        
+        const videoWithCaptionsPath = path.join(os.tmpdir(), `YoutubeBotFiles/withCaptions${currentTime}.mp4`);
+        
+        // CAPTIONING
+
+        const zapcap = new ZapCap({
+            apiKey: process.env.ZAPCAP_API_KEY,
+        });
+
+        // Upload a video
+        const {
+            data: { id: videoId },
+        } = await zapcap.uploadVideo(fs.createReadStream(editedVideoFilePath));
+
+        // Create a video task with the first available template
+        const templateId = "982ad276-a76f-4d80-a4e2-b8fae0038464"; // id for caption template
+        const {
+            data: { taskId },
+        } = await zapcap.createVideoTask(videoId, templateId, autoApprove=true);
+
+        console.log(`Video uploaded and task created with ID: ${taskId}`);
+
+        // already have srt file from earlier so can skip to rendering (???)
+        const transcript = await zapcap.helpers.pollForTranscript(videoId, taskId, {
+            retryFrequencyMs: 5000, // Poll every 5 seconds
+            timeoutMs: 60000, // Timeout after 60 seconds
+        });
+
+        const stream = await zapcap.helpers.pollForRender(
+            videoId,
+            taskId,
+            {
+                retryFrequencyMs: 5000, // Poll every 5 seconds
+                timeoutMs: 120000, // Timeout after 120 seconds
+            },
+            true
+        );
+
+        const writeStream = fs.createWriteStream(videoWithCaptionsPath);
+        await pipeline(stream, writeStream);
+        console.log(`Video has been downloaded and saved to ${videoWithCaptionsPath}`);
+
+        // CAPTIONING
+
+        // console.log(`Subtitles successfully added to: ${videoWithSubtitlesPath}`);
 
         response.send("works")
 
@@ -139,7 +184,7 @@ exports.helloWorld = onRequest(async (request, response) => {
 //     video_path = edit_video(
 //         speech_path, "minecraft.mp4", f"generated/intermediate_{formatted_now}.mp4"
 //     )🟨
-//     srt_path = transcribe_video(video_path, f"generated/{formatted_now}.srt")🟨
+//     srt_path = transcribe_video(video_path, f"generated/{formatted_now}.srt")✅
 //     final_video_path = add_subtitles_to_video(
 //         video_path, srt_path, f"generated/final_{formatted_now}.mp4"
 //     )

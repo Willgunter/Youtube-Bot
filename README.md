@@ -15,6 +15,7 @@ checklist:
     - add subtitles✅
     - upload to youtube
     - figure out deployment with GCP
+    - break up steps between different gcp cloud functions (in same file) so one does not do all the work
 
 commands:
 

@@ -67,7 +67,7 @@ async function uploadToAssemblyAI(filePath, headers) {
  
     try {
         responseFromAssembly = await axios.post("https://api.assemblyai.com/v2/upload", audioData, { headers });
-        console.log(responseFromAssembly);
+        // console.log(responseFromAssembly);
         return responseFromAssembly.data;
     } catch (error) {
         console.error("uploadToAssemblyAI Error:", error);

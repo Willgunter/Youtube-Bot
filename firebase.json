@@ -24,7 +24,8 @@
       "port": 8000
     },
     "functions": {
-      "port": 8001
+      "port": 8001,
+      "timeout": "300s"
     },
     "firestore": {
       "port": 8002

@@ -1,6 +1,6 @@
 
 // creates a script
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const GoogleGenerativeAI = require("@google/generative-ai");
 
 async function createScript(scriptContent) {
     // Make sure to include these imports:
@@ -65,5 +65,5 @@ async function createScript(scriptContent) {
     return {title: "Error message", script: "Error message"}
 }
 
-module.exports = createScript
+module.exports = createScript;
 

@@ -1,6 +1,5 @@
 function getCurrentDateTime() {
     
-    
     const now = new Date(); 
 
     // Options for US formatting

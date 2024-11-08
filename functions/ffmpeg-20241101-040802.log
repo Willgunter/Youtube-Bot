@@ -1,0 +1,152 @@
+ffmpeg started on 2024-11-01 at 04:08:02
+Report written to "ffmpeg-20241101-040802.log"
+Log level: 48
+Command line:
+"C:/Users/Will Gunter/Personal Coding/PythonProjects/Youtube-Bot/functions/bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe" -i "C:\\Users\\WILLGU~1\\AppData\\Local\\Temp\\YoutubeBotFiles\\edited11_01_2024_04_07_39.mp4" -i "C:\\Users\\WILLGU~1\\AppData\\Local\\Temp\\YoutubeBotFiles\\ttsAudio11_01_2024_04_07_39.mp3" -y -acodec aac -filter:a "subtitles=C:\\Users\\WILLGU~1\\AppData\\Local\\Temp\\YoutubeBotFiles\\transcription11_01_2024_04_07_39.srt" -filter:v "crop=100:100" -shortest -report "C:\\Users\\WILLGU~1\\AppData\\Local\\Temp\\YoutubeBotFiles\\withSubtitles11_01_2024_04_07_39.mp4"
+ffmpeg version N-117657-gfe21944656-20241026 Copyright (c) 2000-2024 the FFmpeg developers
+  built with gcc 14.2.0 (crosstool-NG 1.26.0.120_4d36f27)
+  configuration: --prefix=/ffbuild/prefix --pkg-config-flags=--static --pkg-config=pkg-config --cross-prefix=x86_64-w64-mingw32- --arch=x86_64 --target-os=mingw32 --enable-gpl --enable-version3 --disable-debug --disable-w32threads --enable-pthreads --enable-iconv --enable-zlib --enable-libfreetype --enable-libfribidi --enable-gmp --enable-libxml2 --enable-lzma --enable-fontconfig --enable-libharfbuzz --enable-libvorbis --enable-opencl --disable-libpulse --enable-libvmaf --disable-libxcb --disable-xlib --enable-amf --enable-libaom --enable-libaribb24 --enable-avisynth --enable-chromaprint --enable-libdav1d --enable-libdavs2 --enable-libdvdread --enable-libdvdnav --disable-libfdk-aac --enable-ffnvcodec --enable-cuda-llvm --enable-frei0r --enable-libgme --enable-libkvazaar --enable-libaribcaption --enable-libass --enable-libbluray --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librist --enable-libssh --enable-libtheora --enable-libvpx --enable-libwebp --enable-libzmq --enable-lv2 --enable-libvpl   libavutil      59. 46.100 / 59. 46.100
+  libavcodec     61. 22.100 / 61. 22.100
+  libavformat    61.  9.100 / 61.  9.100
+  libavdevice    61.  4.100 / 61.  4.100
+  libavfilter    10.  6.100 / 10.  6.100
+  libswscale      8.  9.101 /  8.  9.101
+  libswresample   5.  4.100 /  5.  4.100
+  libpostproc    58.  4.100 / 58.  4.100
+Splitting the commandline.
+Reading option '-i' ... matched as input url with argument 'C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\edited11_01_2024_04_07_39.mp4'.
+Reading option '-i' ... matched as input url with argument 'C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\ttsAudio11_01_2024_04_07_39.mp3'.
+Reading option '-y' ... matched as option 'y' (overwrite output files) with argument '1'.
+Reading option '-acodec' ... matched as option 'acodec' (alias for -c:a (select encoder/decoder for audio streams)) with argument 'aac'.
+Reading option '-filter:a' ... matched as option 'filter' (apply specified filters to audio/video) with argument 'subtitles=C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\transcription11_01_2024_04_07_39.srt'.
+Reading option '-filter:v' ... matched as option 'filter' (apply specified filters to audio/video) with argument 'crop=100:100'.
+Reading option '-shortest' ... matched as option 'shortest' (finish encoding within shortest input) with argument '1'.
+Reading option '-report' ... matched as option 'report' (generate a report) with argument '1'.
+Reading option 'C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\withSubtitles11_01_2024_04_07_39.mp4' ... matched as output url.
+Finished splitting the commandline.
+Parsing a group of options: global .
+Applying option y (overwrite output files) with argument 1.
+Applying option report (generate a report) with argument 1.
+Successfully parsed a group of options.
+Parsing a group of options: input url C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\edited11_01_2024_04_07_39.mp4.
+Successfully parsed a group of options.
+Opening an input file: C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\edited11_01_2024_04_07_39.mp4.
+[AVFormatContext @ 000001116b930940] Opening 'C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\edited11_01_2024_04_07_39.mp4' for reading
+[file @ 000001116b902100] Setting default whitelist 'file,crypto,data'
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] Format mov,mp4,m4a,3gp,3g2,mj2 probed with size=2048 and score=100
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] ISO: File Type Major Brand: isom
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] Unknown dref type 0x206c7275 size 12
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] Processing st: 0, edit list 0 - media time: 512, duration: 320010
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] Offset DTS by 512 to make first pts zero.
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] Setting codecpar->delay to 2 for stream st: 0
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] Unknown dref type 0x206c7275 size 12
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] Processing st: 1, edit list 0 - media time: 1024, duration: 480504
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] drop a frame at curr_cts: 0 @ 0
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] Before avformat_find_stream_info() pos: 434947 bytes read:58672 seeks:1 nb_streams:2
+[h264 @ 000001116b932600] nal_unit_type: 7(SPS), nal_ref_idc: 3
+[h264 @ 000001116b932600] Decoding VUI
+[h264 @ 000001116b932600] nal_unit_type: 8(PPS), nal_ref_idc: 3
+Transform tree:
+    mdct_inv_float_avx2 - type: mdct_float, len: 64, factors[2]: [2, any], flags: [aligned, out_of_place, inv_only]
+        fft32_asm_float_fma3 - type: fft_float, len: 32, factor: 2, flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+Transform tree:
+    mdct_inv_float_avx2 - type: mdct_float, len: 64, factors[2]: [2, any], flags: [aligned, out_of_place, inv_only]
+        fft32_asm_float_fma3 - type: fft_float, len: 32, factor: 2, flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+Transform tree:
+    mdct_pfa_3xM_inv_float_c - type: mdct_float, len: 96, factors[2]: [3, any], flags: [unaligned, out_of_place, inv_only]
+        fft16_ns_float_fma3 - type: fft_float, len: 16, factor: 2, flags: [aligned, inplace, out_of_place, preshuf]
+Transform tree:
+    mdct_inv_float_avx2 - type: mdct_float, len: 120, factors[2]: [2, any], flags: [aligned, out_of_place, inv_only]
+        fft_pfa_15xM_asm_float_avx2 - type: fft_float, len: 60, factors[2]: [15, 2], flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+            fft4_fwd_asm_float_sse2 - type: fft_float, len: 4, factor: 2, flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+Transform tree:
+    mdct_inv_float_avx2 - type: mdct_float, len: 128, factors[2]: [2, any], flags: [aligned, out_of_place, inv_only]
+        fft_sr_asm_float_avx2 - type: fft_float, len: 64, factor: 2, flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+Transform tree:
+    mdct_inv_float_avx2 - type: mdct_float, len: 480, factors[2]: [2, any], flags: [aligned, out_of_place, inv_only]
+        fft_pfa_15xM_asm_float_avx2 - type: fft_float, len: 240, factors[2]: [15, 2], flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+            fft16_asm_float_fma3 - type: fft_float, len: 16, factor: 2, flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+Transform tree:
+    mdct_inv_float_avx2 - type: mdct_float, len: 512, factors[2]: [2, any], flags: [aligned, out_of_place, inv_only]
+        fft_sr_asm_float_avx2 - type: fft_float, len: 256, factor: 2, flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+Transform tree:
+    mdct_pfa_3xM_inv_float_c - type: mdct_float, len: 768, factors[2]: [3, any], flags: [unaligned, out_of_place, inv_only]
+        fft_sr_ns_float_avx2 - type: fft_float, len: 128, factor: 2, flags: [aligned, inplace, out_of_place, preshuf]
+Transform tree:
+    mdct_inv_float_avx2 - type: mdct_float, len: 960, factors[2]: [2, any], flags: [aligned, out_of_place, inv_only]
+        fft_pfa_15xM_asm_float_avx2 - type: fft_float, len: 480, factors[2]: [15, 2], flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+            fft32_asm_float_fma3 - type: fft_float, len: 32, factor: 2, flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+Transform tree:
+    mdct_inv_float_avx2 - type: mdct_float, len: 1024, factors[2]: [2, any], flags: [aligned, out_of_place, inv_only]
+        fft_sr_asm_float_avx2 - type: fft_float, len: 512, factor: 2, flags: [aligned, inplace, out_of_place, preshuf, asm_call]
+Transform tree:
+    mdct_fwd_float_c - type: mdct_float, len: 1024, factors[2]: [2, any], flags: [unaligned, out_of_place, fwd_only]
+        fft_sr_ns_float_avx2 - type: fft_float, len: 512, factor: 2, flags: [aligned, inplace, out_of_place, preshuf]
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] demuxer injecting skip 1024 / discard 0
+[aac @ 000001116b933940] skip 1024 / discard 0 samples due to side data
+[h264 @ 000001116b932600] nal_unit_type: 7(SPS), nal_ref_idc: 3
+[h264 @ 000001116b932600] Decoding VUI
+[h264 @ 000001116b932600] nal_unit_type: 8(PPS), nal_ref_idc: 3
+[h264 @ 000001116b932600] nal_unit_type: 6(SEI), nal_ref_idc: 0
+[h264 @ 000001116b932600] nal_unit_type: 5(IDR), nal_ref_idc: 3
+[h264 @ 000001116b932600] Format yuv420p chosen by get_format().
+[h264 @ 000001116b932600] Reinit context to 112x112, pix_fmt: yuv420p
+[h264 @ 000001116b932600] no picture 
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] All info found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 000001116b930940] After avformat_find_stream_info() pos: 2602 bytes read:91440 seeks:2 frames:2
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\edited11_01_2024_04_07_39.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf61.9.100
+  Duration: 00:00:20.83, start: 0.000000, bitrate: 167 kb/s
+  Stream #0:0[0x1](und), 1, 1/15360: Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 100x100 [SAR 1:1 DAR 1:1], 88 kb/s, 60 fps, 60 tbr, 15360 tbn (default)
+    Metadata:
+      handler_name    : ISO Media file produced by Google Inc.
+      vendor_id       : [0][0][0][0]
+      encoder         : Lavc61.22.100 libx264
+  Stream #0:1[0x2](und), 1, 1/24000: Audio: aac (LC) (mp4a / 0x6134706D), 24000 Hz, mono, fltp, 71 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+      vendor_id       : [0][0][0][0]
+Successfully opened the file.
+Parsing a group of options: input url C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\ttsAudio11_01_2024_04_07_39.mp3.
+Successfully parsed a group of options.
+Opening an input file: C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\ttsAudio11_01_2024_04_07_39.mp3.
+[AVFormatContext @ 000001116b933940] Opening 'C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\ttsAudio11_01_2024_04_07_39.mp3' for reading
+[file @ 000001116b902980] Setting default whitelist 'file,crypto,data'
+[mp3 @ 000001116b933940] Format mp3 probed with size=2048 and score=51
+[mp3 @ 000001116b933940] Skipping 0 bytes of junk at 0.
+[mp3 @ 000001116b933940] Before avformat_find_stream_info() pos: 0 bytes read:65664 seeks:2 nb_streams:1
+[mp3 @ 000001116b933940] All info found
+[mp3 @ 000001116b933940] Estimating duration from bitrate, this may be inaccurate
+[mp3 @ 000001116b933940] After avformat_find_stream_info() pos: 10240 bytes read:65664 seeks:2 frames:50
+Input #1, mp3, from 'C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\ttsAudio11_01_2024_04_07_39.mp3':
+  Duration: 00:00:12.02, start: 0.000000, bitrate: 64 kb/s
+  Stream #1:0, 50, 1/14112000: Audio: mp3 (mp3float), 24000 Hz, mono, fltp, 64 kb/s
+Successfully opened the file.
+Parsing a group of options: output url C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\withSubtitles11_01_2024_04_07_39.mp4.
+Applying option acodec (alias for -c:a (select encoder/decoder for audio streams)) with argument aac.
+Applying option filter:a (apply specified filters to audio/video) with argument subtitles=C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\transcription11_01_2024_04_07_39.srt.
+Applying option filter:v (apply specified filters to audio/video) with argument crop=100:100.
+Applying option shortest (finish encoding within shortest input) with argument 1.
+Successfully parsed a group of options.
+Opening an output file: C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\withSubtitles11_01_2024_04_07_39.mp4.
+[out#0/mp4 @ 000001116b901780] No explicit maps, mapping streams automatically...
+[vost#0:0/libx264 @ 000001116d8ea600] Created video stream from input stream 0:0
+[AVFilterGraph @ 000001116d8d6700] Setting 'out_w' to value '100'
+[AVFilterGraph @ 000001116d8d6700] Setting 'out_h' to value '100'
+detected 12 logical cores
+[h264 @ 000001116b9708c0] nal_unit_type: 7(SPS), nal_ref_idc: 3
+[h264 @ 000001116b9708c0] Decoding VUI
+[h264 @ 000001116b9708c0] nal_unit_type: 8(PPS), nal_ref_idc: 3
+[aost#0:1/aac @ 000001116d899cc0] Created audio stream from input stream 0:1
+[AVFilterGraph @ 000001116d898800] Setting 'filename' to value 'C'
+[AVFilterGraph @ 000001116d898800] Setting 'original_size' to value 'UsersWILLGU~1AppDataLocalTempYoutubeBotFilestranscription11_01_2024_04_07_39.srt'
+[Parsed_subtitles_0 @ 000001116b901880] Unable to parse option value "UsersWILLGU~1AppDataLocalTempYoutubeBotFilestranscription11_01_2024_04_07_39.srt" as image size
+[fc#-1 @ 000001116d88c440] Error applying option 'original_size' to filter 'subtitles': Invalid argument
+Error opening output file C:\Users\WILLGU~1\AppData\Local\Temp\YoutubeBotFiles\withSubtitles11_01_2024_04_07_39.mp4.
+Error opening output files: Invalid argument
+[AVIOContext @ 000001116b939e80] Statistics: 91440 bytes read, 2 seeks
+[AVIOContext @ 000001116b933c00] Statistics: 65664 bytes read, 2 seeks
