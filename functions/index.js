@@ -31,6 +31,7 @@ const speechUpload = require('./utils/speechUpload.js'); // not using because it
 const editVideo = require('./utils/editVideo.js');
 const generateSubtitles = require('./utils/generateSubtitles.js');
 const addSubtitlesToVideo = require('./utils/addSubtitlesToVideo.js'); // currently working on
+const addCaptions = require('./utils/addCaptions.js');
 
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
@@ -56,7 +57,12 @@ const bucket = admin.storage().bucket();
 
 // START OF MAIN STUFF!!!
 
-exports.helloWorld = onRequest(async (request, response) => {
+exports.helloWorld = onRequest({
+    timeoutSeconds: 540, // 9 minutes (max is 540 seconds for standard tier)
+    memory: '2GiB',     // Increase memory allocation
+    minInstances: 0,    // Minimum number of instances
+    maxInstances: 100   // Maximum number of instances
+}, async (request, response) => {
     // exports.helloWorld = onRequest.runWith({timeoutSeconds: "300s"}).async(async (request, response) => {
 
     let script;
@@ -111,44 +117,7 @@ exports.helloWorld = onRequest(async (request, response) => {
         const videoWithCaptionsPath = path.join(os.tmpdir(), `YoutubeBotFiles/withCaptions${currentTime}.mp4`);
         
         // CAPTIONING
-
-        const zapcap = new ZapCap({
-            apiKey: process.env.ZAPCAP_API_KEY,
-        });
-
-        // Upload a video
-        const {
-            data: { id: videoId },
-        } = await zapcap.uploadVideo(fs.createReadStream(editedVideoFilePath));
-
-        // Create a video task with the first available template
-        const templateId = "982ad276-a76f-4d80-a4e2-b8fae0038464"; // id for caption template
-        const {
-            data: { taskId },
-        } = await zapcap.createVideoTask(videoId, templateId, autoApprove=true);
-
-        console.log(`Video uploaded and task created with ID: ${taskId}`);
-
-        // already have srt file from earlier so can skip to rendering (???)
-        const transcript = await zapcap.helpers.pollForTranscript(videoId, taskId, {
-            retryFrequencyMs: 5000, // Poll every 5 seconds
-            timeoutMs: 60000, // Timeout after 60 seconds
-        });
-
-        const stream = await zapcap.helpers.pollForRender(
-            videoId,
-            taskId,
-            {
-                retryFrequencyMs: 5000, // Poll every 5 seconds
-                timeoutMs: 120000, // Timeout after 120 seconds
-            },
-            true
-        );
-
-        const writeStream = fs.createWriteStream(videoWithCaptionsPath);
-        await pipeline(stream, writeStream);
-        console.log(`Video has been downloaded and saved to ${videoWithCaptionsPath}`);
-
+        await addCaptions(editedVideoFilePath, videoWithCaptionsPath);
         // CAPTIONING
 
         // console.log(`Subtitles successfully added to: ${videoWithSubtitlesPath}`);
@@ -163,29 +132,3 @@ exports.helloWorld = onRequest(async (request, response) => {
     }
 
 });
-
-// def main():
-//     if not os.path.exists("generated"):✅
-//         os.makedirs("generated")✅
-
-//     script = create_script("Fast food")✅
-//     title, content = script["title"], script["script"]✅
-//     print("Title:", title)✅
-//     print("Content:", content)✅
-
-//     if len(title) > 100:✅
-//         print("Error: The title is too long for YouTube. Title length:", len(title))✅
-//         return✅
-
-//     formatted_now = get_current_datetime()✅
-
-//     speech_path = generate_speech(content, f"generated/speech_{formatted_now}.mp3")✅
-
-//     video_path = edit_video(
-//         speech_path, "minecraft.mp4", f"generated/intermediate_{formatted_now}.mp4"
-//     )🟨
-//     srt_path = transcribe_video(video_path, f"generated/{formatted_now}.srt")✅
-//     final_video_path = add_subtitles_to_video(
-//         video_path, srt_path, f"generated/final_{formatted_now}.mp4"
-//     )
-//     final_short_path = shorten_video_if_needed(final_video_path)

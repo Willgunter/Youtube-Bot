@@ -5,81 +5,97 @@ const path = require('path');
 // ffmpeg.setFfmpegPath("../bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe");
 ffmpeg.setFfmpegPath("C:/Users/Will Gunter/Personal Coding/PythonProjects/Youtube-Bot/functions/bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe");
 
-ffmpeg.setFfprobePath('../../bin/ffmpeg-7.0.2-amd64-static/ffmpeg-master-latest-win64-gpl/bin/ffprobe');
+ffmpeg.setFfprobePath('C:/Users/Will Gunter/Personal Coding/PythonProjects/Youtube-Bot/functions/bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffprobe');
 
 // vvv
 // https://www.gyan.dev/ffmpeg/builds/
 async function editVideo(audioPath, videoPath, outputPath) {
-                    // texttospeech+, minecraft, edited+
-        
-        // MUST BE BETWEEN 0.5 and 2.0
-        // (can chain more together if necessary tho)
-        // .audioFilters(`atempo=0.5,atempo=0.5) etc..
+    return new Promise((resolve, reject) => {
+        // First get the video dimensions
         const audioSpeed = 1.0;
-    
-        // const [targetWidth, targetHeight] = [1080, 1920];
-        // const [targetWidth, targetHeight] = [100, 100];
+        ffmpeg.ffprobe(videoPath, (err, metadata) => {
+            if (err) {
+                reject(new Error(`Failed to probe video: ${err.message}`));
+                return;
+            }
 
-        // const scaleFilter = `scale=if(gte(iw/ih,${targetWidth}/${targetHeight}),-1,${targetHeight}):if(gte(iw/ih,${targetWidth}/${targetHeight}),${targetWidth},-1)`;
-        // const cropFilter = `crop=${targetWidth}:${targetHeight}`;
-        // const cropFilter = `crop=${targetWidth}:${targetHeight}`; // width, height
-        console.log() // log size of 
-        return new Promise((resolve, reject) => {
-            ffmpeg(videoPath)
-              .audioCodec('aac') // Set the audio codec
-              .input(audioPath) // Add the audio file as input
-              .audioFilters(`atempo=${audioSpeed}`)
-              .outputOptions('-shortest') // Stop when the shortest stream ends
-            //   .videoFilters(cropFilter)//,${scaleFilter}`)
-              .save(outputPath) // Save the output file
-              // await new Promise(resolve => setTimeout(resolve, 20000)); // 20 seconds
-              .on('end', () => {
-                console.log(`Successfully combined audio and video. Output saved to: ${outputPath}`);
-                resolve(outputPath);
-              })
-              .on('error', (err) => {
-                console.error('Error combining audio and video:', err);
-                reject(err);
-              });
-          });
+            const stream = metadata.streams.find(s => s.codec_type === 'video');
+            if (!stream) {
+                reject(new Error('No video stream found'));
+                return;
+            }
 
-        
-        // try downloading file from firebase first
-        // into tmp directory (see "Youtube Bot Project")
-        // await new Promise((resolve, reject) => {
-        //   ffmpeg(audioPath)
-        //     .audioFilters(`atempo=${audioSpeed}`)
-        //     .save(outputPath)
-        //     .on('end', resolve)
-        //     .on('error', reject);
-        // });
-      
-        // // Step 2: Trim the Video Clip and Add Audio
-        // const audioDuration = await new Promise((resolve, reject) => {
-        //   ffmpeg.ffprobe(tempAudioPath, (err, metadata) => {
-        //     if (err) reject(err);
-        //     else resolve(metadata.format.duration);
-        //   });
-        // });
-      
-        // const videoEndPoint = startPoint + audioDuration + 1.3;
-        
-        // Step 3: Set the Audio to Video and Adjust Aspect Ratio
-        // await new Promise((resolve, reject) => {
-        //   ffmpeg(videoPath)
-        //     .setStartTime(startPoint)
-        //     .setDuration(videoEndPoint - startPoint)
-        //     .videoFilters("scale=1080:1920:force_original_aspect_ratio=decrease")
-        //     .input(tempAudioPath)
-        //     .outputOptions("-c:v libx264", "-c:a aac", "-threads 4", "-preset ultrafast")
-        //     .save(outputPath)
-        //     .on("end", resolve)
-        //     .on("error", reject);
-        // });
-      
-        // // Clean up temporary audio file
-        // fs.unlinkSync(tempAudioPath);
-        // console.log("Video processing completed.");
+            const inputWidth = stream.width;
+            const inputHeight = stream.height;
+            console.log(`Input video dimensions: ${inputWidth}x${inputHeight}`);
+
+            const targetWidth = 1080;
+            const targetHeight = 1920;
+
+            // Calculate scaling parameters based on aspect ratio
+            let scaleFilter;
+            let cropFilter;
+
+            // Calculate scaling while maintaining aspect ratio
+            const inputAspect = inputWidth / inputHeight;
+            const targetAspect = targetWidth / targetHeight;
+
+            if (inputAspect > targetAspect) {
+                // Video is wider than target aspect ratio
+                const scaledHeight = targetHeight;
+                const scaledWidth = Math.round(scaledHeight * inputAspect);
+                scaleFilter = `scale=${scaledWidth}:${targetHeight}`;
+                const cropX = Math.round((scaledWidth - targetWidth) / 2);
+                cropFilter = `crop=${targetWidth}:${targetHeight}:${cropX}:0`;
+            } else {
+                // Video is taller than target aspect ratio
+                const scaledWidth = targetWidth;
+                const scaledHeight = Math.round(scaledWidth / inputAspect);
+                scaleFilter = `scale=${targetWidth}:${scaledHeight}`;
+                const cropY = Math.round((scaledHeight - targetHeight) / 2);
+                cropFilter = `crop=${targetWidth}:${targetHeight}:0:${cropY}`;
+            }
+
+            ffmpeg()
+                .input(videoPath)
+                .input(audioPath)
+                // Apply video filters
+                .videoFilters([
+                    scaleFilter,
+                    cropFilter
+                ])
+                // Apply audio filters
+                .audioFilters(`atempo=${audioSpeed}`)
+                // Set output options
+                .outputOptions([
+                    '-c:v libx264',        // Video codec
+                    '-preset medium',       // Encoding speed preset
+                    '-crf 23',             // Quality
+                    '-c:a aac',            // Audio codec
+                    '-b:a 192k',           // Audio bitrate
+                    '-shortest'            // End when shortest input ends
+                ])
+                .size(`${targetWidth}x${targetHeight}`)
+                .fps(30)
+                .format('mp4')
+                .on('start', (commandLine) => {
+                    console.log('Started FFmpeg with command:', commandLine);
+                    console.log(`Output target dimensions: ${targetWidth}x${targetHeight}`);
+                })
+                .on('progress', (progress) => {
+                    console.log(`Processing: ${Math.round(progress.percent)}% done`);
+                })
+                .on('error', (err) => {
+                    console.error('Error during processing:', err);
+                    reject(err);
+                })
+                .on('end', () => {
+                    console.log(`Successfully processed video. Output saved to: ${outputPath}`);
+                    resolve(outputPath);
+                })
+                .save(outputPath);
+        });
+    });
 }
     // audio_clip = AudioFileClip(audio_path).fx(vfx.speedx, 1)
     

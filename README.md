@@ -2,20 +2,22 @@
 A bot that creates shorts content and automatically uploads them to platforms
 
 checklist:
-    - integrate with google gemini for script✅
+    - integrate with google gemini for script ✅
     - use gtts for text-to-speech ✅
     - use something better (elevenLabs) for text-to-speech
     - editing
-        - combine speech + audio into a video✅
-        - crop video to 16:9 or whatever --> come back to once
+        - combine speech + audio into a video ✅
+        - crop video to 16:9 or whatever ✅
             I find a source of videos
         - figure out how to fetch random clips + validate they are Creative Commons certified
         - edit video (idk what specific things)
     - figure out how to edit video really well for viewer engagement (stretch goal if this ends up working)
-    - add subtitles✅
+    - add subtitles ✅
     - upload to youtube
     - figure out deployment with GCP
-    - break up steps between different gcp cloud functions (in same file) so one does not do all the work
+    - break up steps between different gcp cloud functions (in same file) so one does not do all the work (after I am done with main stuff though)
+    - either get rid of addSubtitlesToVideos or do it through ZapCap (want to do it through subtitles but thats not super important and something for the future)
+    - organize code (add / remove comments, move variable initiation around, remove unneeded imports, etc...)
 
 current problems / todos:
     - finish with captions
