@@ -9,7 +9,7 @@ checklist:
         - combine speech + audio into a video ✅
         - crop video to 16:9 or whatever ✅
             I find a source of videos
-        - figure out how to fetch random clips + validate they are Creative Commons certified
+        - figure out how to fetch random clips + validate they are Creative Commons certified 🟨
         - edit video (idk what specific things)
     - figure out how to edit video really well for viewer engagement (stretch goal if this ends up working)
     - add subtitles ✅
@@ -21,17 +21,15 @@ checklist:
 
 current problems / todos:
     - finish with captions
-        - poke around a little bit with changing time out, but
-        look into breaking up work into other functions (might not be able to do without pub / sub or something)
-        - once timeout starts working, zapcap captions should(???) work which would be good
         - start looking around for a place for creative commons vertical videos I can use
-        - then finish editing (cropping / padding mainly) if necessary
 
 commands:
 
     // runs locally
     // run from root of project?
-    firebase emulators:start
+    - (in functions) firebase emulators:start
+    - (in functions) yt-dlp -o "./videos/fall_guys.(%ext)s" -f bestvideo https://www.youtube.com/watch?v=oGSsgACIc6Q
+        - (downloads fall guys video w/ best video quality (background audio is not necessary rn))
 
 
 TODO: (for self) eventually export setup / admin / other firebase stuff to utils

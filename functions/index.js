@@ -33,9 +33,6 @@ const generateSubtitles = require('./utils/generateSubtitles.js');
 const addSubtitlesToVideo = require('./utils/addSubtitlesToVideo.js'); // currently working on
 const addCaptions = require('./utils/addCaptions.js');
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
-
 // firebase emulators:start
 
 // Import Firebase and Firestore
@@ -51,9 +48,6 @@ admin.initializeApp({
 });
 
 const bucket = admin.storage().bucket();
-
-// const storage = new Storage();
-// const bucket = sto
 
 // START OF MAIN STUFF!!!
 
@@ -83,7 +77,9 @@ exports.helloWorld = onRequest({
     //     }
     // } while (title.length > 100); // repeats if title is too long (might change later)
     // TODO: for testing 
-    const responseFromGemini = "look at me my project is starting to finally take shape finally this has taken so long I am so happy wheee eeeeeeeeee wheeeeeeee eeeee wheeeeeeeeeeeee";
+    const responseFromGemini = `I tried starting a hot air balloon business, but it never took off.
+I used to hate facial hair... but then I grew fond of it.
+I'm reading a book about anti-gravity. It's impossible to put down. `;
 
     currentTime = getCurrentDateTime();
     ttsAudioPath = path.join(os.tmpdir(), "YoutubeBotFiles/ttsAudio" + currentTime + ".mp3");
@@ -103,7 +99,6 @@ exports.helloWorld = onRequest({
         // https://www.gyan.dev/ffmpeg/builds/ <-- if we decide on something else later
         const editedVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/edited" + currentTime + ".mp4");
         const originalVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/minecraft.mp4")
-        // "edits" the video --> applys basic cropping + just combines audio + video for now
         await editVideo(ttsAudioPath, originalVideoFilePath, editedVideoFilePath);
 
         // transcribe video
@@ -113,7 +108,6 @@ exports.helloWorld = onRequest({
 
         // works until here
 
-        
         const videoWithCaptionsPath = path.join(os.tmpdir(), `YoutubeBotFiles/withCaptions${currentTime}.mp4`);
         
         // CAPTIONING
@@ -129,6 +123,7 @@ exports.helloWorld = onRequest({
         response.status(500).send("Failed to upload file.");
     } finally {
         // fs.unlinkSync(ttsPath);
+        // don't forget to unlinkSync (delete) all the other files
     }
 
 });
