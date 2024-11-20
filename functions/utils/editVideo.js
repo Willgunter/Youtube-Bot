@@ -11,17 +11,25 @@ ffmpeg.setFfprobePath('C:/Users/Will Gunter/Personal Coding/PythonProjects/Youtu
 // https://www.gyan.dev/ffmpeg/builds/
 async function editVideo(audioPath, videoPath, outputPath) {
     return new Promise((resolve, reject) => {
-        // First get the video dimensions
-        const audioSpeed = 1.0;
         ffmpeg.ffprobe(videoPath, (err, metadata) => {
+
+            // vvv basic error checking vvv
             if (err) {
                 reject(new Error(`Failed to probe video: ${err.message}`));
                 return;
             }
 
             const stream = metadata.streams.find(s => s.codec_type === 'video');
+
             if (!stream) {
                 reject(new Error('No video stream found'));
+                return;
+            }
+
+            const backgroundVideoDuration = metadata.format.duration;
+
+            if (!backgroundVideoDuration || backgroundVideoDuration < 120) {
+                reject(new Error("Video is shorter than 2 minutes or doesn't exist"));
                 return;
             }
 
@@ -56,9 +64,20 @@ async function editVideo(audioPath, videoPath, outputPath) {
                 cropFilter = `crop=${targetWidth}:${targetHeight}:0:${cropY}`;
             }
 
+            // grab random starting point from background video
+            // one minute + 3 seconds for safety = 63
+            // MIGHT INCREASE SEEK TIME DEPENDING ON VIDEO QUALITY, VIDEO DURATION, AND VALUE OF RANOM START
+            // ... AND SCRIPT LENGTH AS WELL
+            // (higher / closer to end of video = longer) 
+            // WILL PROBABLY NEED TO BE EXPORTED AS CLOUD RUN DUE TO PROCESSING TIME
+            const randomStart = Math.floor(Math.random() * (backgroundVideoDuration - 63))
+            const audioSpeed = 1.0
+
             ffmpeg()
-                .input(videoPath)
+            .input(videoPath)
+            .inputOptions([`-ss ${randomStart}`])
                 .input(audioPath)
+                // specifies start of video
                 // Apply video filters
                 .videoFilters([
                     scaleFilter,
@@ -96,8 +115,6 @@ async function editVideo(audioPath, videoPath, outputPath) {
                 .save(outputPath);
         });
     });
-}
-    // audio_clip = AudioFileClip(audio_path).fx(vfx.speedx, 1)
-    
+}   
      
 module.exports = editVideo;

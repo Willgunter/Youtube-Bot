@@ -1,61 +1,63 @@
 
 // creates a script
-const GoogleGenerativeAI = require("@google/generative-ai");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 async function createScript(scriptContent) {
     // Make sure to include these imports:
-    
-    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
     try {
-
-    
+        console.log("first line");
+        let genAI;
+        try {
+            genAI = new GoogleGenerativeAI(process.env.API_KEY); // problem
+            console.log("GenAI initialized successfully");
+        } catch (error) {
+            console.log("GenAI initialization error:", error);
+        }
+        console.log("createScript is running");
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-8b" });
+        
+        console.log(process.env.API_KEY);
         const generationConfig = {
             maxOutputTokens: 8192,
             temperature: 1,
             top_p: 0.95,
-            top_k: 64,
-            response_schema: {
-                type: "object",
-                properties: {
-                    title: { type: "string" },
-                    script: { type: "string" }
-                }
-            },
-            response_mime_type: "application/json"
+            // top_k: 64, // for regular flash model
+            top_k: 40, // for flash 8b model
+            
         };
         
         const result = await model.generateContent({
-            contents: [
-                { 
-                    role: 'user',
-                parts: [
-                    {
-                        text: scriptContent,
-                    },
-                ],
-                }
-            ],
-            generationConfig: generationConfig,
+            contents: [{ 
+                role: 'user',
+                parts: [{ text: scriptContent, },],
+            }],
+            // generationConfig: generationConfig,
+            generationConfig
         });
         
-        console.log("Full Result:", JSON.stringify(result, null, 2));
+        const textResponse = result.response.text();
+        console.log("Full Result:", textResponse);
         
-        if (result && result.response && result.response.candidates) {
-
-            // Extract the 'text' content from the response
-            const textResponse = result.response.candidates[0].content.parts[0].text;
-            
-            console.log("Title: " + JSON.parse(textResponse).title)
-            console.log("Script:", JSON.parse(textResponse).script);
-
-            return {title: JSON.parse(textResponse).title, script: JSON.parse(textResponse).script};  // Return the title or script as needed
-        } else {
-            console.error("Invalid response structure:", result);
+        try {
+            // Try parsing the response as JSON
+            const parsedResponse = JSON.parse(textResponse.trim()
+                // .replace(/^```json\n/, '')
+                .replace(/^```json\s*/, '')
+                .replace(/```$/, ''))
+                
+            return {
+                title: parsedResponse.title, 
+                script: parsedResponse.script
+            };
+        } catch (parseError) {
+            // If JSON parsing fails, return the raw text
+            console.error("Could not parse JSON:", parseError);
+            return {
+                title: "Error parsing response",
+                script: textResponse
+            };
         }
-
-        // const {title, script} = result.response.data;
+        
     } catch (error) {
         console.log("this doesn't work")
         console.error("Error creating script:", error);

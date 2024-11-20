@@ -14,6 +14,7 @@ const fsExtra = require('fs-extra');
 const ffmpeg = require('fluent-ffmpeg');
 const { ZapCap } = require("zapcap");
 const { pipeline } = require("stream/promises");
+require('dotenv').config();
 
 // NO @ffmpeg/ffmpeg !!!!!!!!!!!
 
@@ -59,27 +60,52 @@ exports.helloWorld = onRequest({
 }, async (request, response) => {
     // exports.helloWorld = onRequest.runWith({timeoutSeconds: "300s"}).async(async (request, response) => {
 
-    let script;
-    let title = "";
+        
+        // TODO comment for testing (so we don't waste gemini)
+        let responseFromGemini;
+        let title;
 
-    // TODO comment for testing (so we don't waste gemini)
-    // do {
-    //     try {
-    //         responseFromGemini = await createScript("Give me a short speech on why fast food is bad for you and a complementary title as well")
-    //         // response.send("script: " + responseFromGemini.script + "title: " + responseFromGemini.title);
+        try {
+            do {
+                console.log("aosidhf;");
+                const prompt = `Create a YouTube video script and title for a video about anything you would like. 
 
-    //         script = responseFromGemini.script;
-    //         title = responseFromGemini.title;
+                REQUIREMENTS:
+                - Title must be engaging, clickbait-style, under 60 characters
+                - Script should be in standard screenplay/video script format
+                - Include timestamps for each section
+                - Target length: 30 seconds - 50 seconds of spoken content
+                - Use a conversational, energetic tone suitable for YouTube
+                - I am not worried about b-roll or who says what, just give me the text and I can take care of the editing later
+                - do not use quotes, parentheses, or brackets of any kind, again, just the text
+                - do not give me timestamps, I am just concerned about the script for now, this is a rough draft
+                - Return ONLY raw JSON with no markdown formatting, no code blocks, and no backticks.
+                - give the script value in one string, not a list of strings 
 
-    //     } catch (error) {
-    //         logger.error("Error creating script: ", error);
-    //         response.status(500).send("An error occurred");
-    //     }
-    // } while (title.length > 100); // repeats if title is too long (might change later)
+                FORMAT:
+                {
+                    "title": "String: Catchy YouTube title",
+                    "script": "String: summarize an entertaining wikipedia article in an interesting way. Be / pretend to be an enthusiastic youtuber
+                    while still keeping a formal tone"
+                    }`;
+                    // - Include potential B-roll or visual suggestions in parentheses
+            const scriptResponse = await createScript(prompt)
+            
+            console.log(`Script: ${scriptResponse.script}`)
+            responseFromGemini = scriptResponse.script;
+            title = scriptResponse.title;
+
+        } while (title == undefined || title.length > 100); // repeats if title is too long (might change later)
+        } catch (error) {
+            // logger.error("Error creating script: ", error);
+            response.status(500).send("An error occurred");
+        }
+    console.log(`Scrip555t: ${responseFromGemini}`)
+    
     // TODO: for testing 
-    const responseFromGemini = `I tried starting a hot air balloon business, but it never took off.
-I used to hate facial hair... but then I grew fond of it.
-I'm reading a book about anti-gravity. It's impossible to put down. `;
+//     responseFromGemini = `I tried starting a hot air balloon business, but it never took off.
+// I used to hate facial hair... but then I grew fond of it.
+// I'm reading a book about anti-gravity. It's impossible to put down. `;
 
     currentTime = getCurrentDateTime();
     ttsAudioPath = path.join(os.tmpdir(), "YoutubeBotFiles/ttsAudio" + currentTime + ".mp3");
@@ -98,7 +124,8 @@ I'm reading a book about anti-gravity. It's impossible to put down. `;
 
         // https://www.gyan.dev/ffmpeg/builds/ <-- if we decide on something else later
         const editedVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/edited" + currentTime + ".mp4");
-        const originalVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/minecraft.mp4")
+        // const originalVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/minecraft.mp4")
+        const originalVideoFilePath = "./videos/fall_guys.webm";
         await editVideo(ttsAudioPath, originalVideoFilePath, editedVideoFilePath);
 
         // transcribe video

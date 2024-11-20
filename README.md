@@ -18,6 +18,7 @@ checklist:
     - break up steps between different gcp cloud functions (in same file) so one does not do all the work (after I am done with main stuff though)
     - either get rid of addSubtitlesToVideos or do it through ZapCap (want to do it through subtitles but thats not super important and something for the future)
     - organize code (add / remove comments, move variable initiation around, remove unneeded imports, etc...)
+    - add error handling / retry login / phone text if it goes wrong (in the future)
 
 current problems / todos:
     - finish with captions
