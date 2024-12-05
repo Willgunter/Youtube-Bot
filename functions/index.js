@@ -18,10 +18,10 @@ require('dotenv').config();
 
 // NO @ffmpeg/ffmpeg !!!!!!!!!!!
 
-const admin = require('firebase-admin')
-const serviceAccount = require('./bot-e5092-firebase-adminsdk-n1rf1-d5e77f04c2.json');
-const fs = require('fs');
-const gTTS = require('gtts');
+// const admin = require('firebase-admin')
+// const serviceAccount = require('./bot-e5092-firebase-adminsdk-n1rf1-d5e77f04c2.json');
+// const fs = require('fs');
+// const gTTS = require('gtts');
 const os = require('os');
 const path = require('path');
 
@@ -30,7 +30,7 @@ const getCurrentDateTime = require('./utils/currentDateTime.js');
 const generateTTS = require('./utils/generateTTS.js');
 const speechUpload = require('./utils/speechUpload.js'); // not using because it is not uploaded to cloud yet
 const editVideo = require('./utils/editVideo.js');
-const generateSubtitles = require('./utils/generateSubtitles.js');
+const generateSubtitles = require('./utils/generateSrtFile.js');
 const addSubtitlesToVideo = require('./utils/addSubtitlesToVideo.js'); // currently working on
 const addCaptions = require('./utils/addCaptions.js');
 
@@ -43,12 +43,12 @@ const addCaptions = require('./utils/addCaptions.js');
 // const firestore = admin.firestore();
 
 // Initialize Firebase Admin SDK 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    storageBucket: 'gs://bot-e5092.appspot.com',
-});
+// admin.initializeApp({
+    // credential: admin.credential.cert(serviceAccount),
+    // storageBucket: 'gs://bot-e5092.appspot.com',
+// });
 
-const bucket = admin.storage().bucket();
+// const bucket = admin.storage().bucket();
 
 // START OF MAIN STUFF!!!
 
@@ -108,7 +108,9 @@ exports.helloWorld = onRequest({
 // I'm reading a book about anti-gravity. It's impossible to put down. `;
 
     currentTime = getCurrentDateTime();
-    ttsAudioPath = path.join(os.tmpdir(), "YoutubeBotFiles/ttsAudio" + currentTime + ".mp3");
+    // ttsAudioPath = path.join(os.tmpdir(), "YoutubeBotFiles/ttsAudio" + currentTime + ".mp3");
+    ttsAudioPath = "./delete_later/ttsAudio" + currentTime + ".mp3";
+
 
     console.log("basic stuff completed");
 
@@ -123,26 +125,45 @@ exports.helloWorld = onRequest({
         // console.log("speechUpload completed");
 
         // https://www.gyan.dev/ffmpeg/builds/ <-- if we decide on something else later
-        const editedVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/edited" + currentTime + ".mp4");
+        // const editedVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/edited" + currentTime + ".mp4");
+        const editedVideoFilePath = "./delete_later/edited" + currentTime + ".webm";
+
         // const originalVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/minecraft.mp4")
-        const originalVideoFilePath = "./videos/fall_guys.webm";
+        const originalVideoFilePath = "./videos/surfer-1.mp4";
         await editVideo(ttsAudioPath, originalVideoFilePath, editedVideoFilePath);
 
         // transcribe video
-        const srtOutputPath = path.join(os.tmpdir(), `YoutubeBotFiles/transcription${currentTime}.srt`);
+        // const srtOutputPath = path.join(os.tmpdir(), `YoutubeBotFiles/transcription${currentTime}.srt`);
+        const srtOutputPath = `./delete_later/transcription${currentTime}.srt`;
         await generateSubtitles(editedVideoFilePath, srtOutputPath);
-        console.log(`Transcription saved to: ${srtOutputPath}`);
+        // console.log(`Transcription saved to: ${srtOutputPath}`);
 
         // works until here
 
-        const videoWithCaptionsPath = path.join(os.tmpdir(), `YoutubeBotFiles/withCaptions${currentTime}.mp4`);
-        
+        // const videoWithCaptionsPath = path.join(os.tmpdir(), `YoutubeBotFiles/withCaptions${currentTime}.mp4`);
+        const videoWithCaptionsPath = `./delete_later/withCaptions${currentTime}.mp4`;
         // CAPTIONING
         await addCaptions(editedVideoFilePath, videoWithCaptionsPath);
         // CAPTIONING
 
         // console.log(`Subtitles successfully added to: ${videoWithSubtitlesPath}`);
-
+        
+        const webmFile = `./delete_later/aswebm${currentTime}.webm`
+        ffmpeg(videoWithCaptionsPath)
+          .output(webmFile)
+          .videoCodec('libvpx-vp9')  // Use VP9 codec for WebM
+          .audioCodec('libopus')     // Use Opus codec for audio
+          .on('progress', (progress) => {
+            console.log(`Processing: ${progress.percent.toFixed(2)}% done`);
+          })
+          .on('end', () => {
+            console.log('Conversion completed successfully!');
+          })
+          .on('error', (err) => {
+            console.error('Error during conversion:', err);
+          })
+          .run();
+      
         response.send("works")
 
     } catch (error) {
