@@ -1,9 +1,12 @@
 const ffmpeg = require('fluent-ffmpeg');
 
 // ffmpeg.setFfmpegPath("../bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe");
-ffmpeg.setFfmpegPath("../bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe");
+// ffmpeg.setFfmpegPath("../bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe");
+// ffmpeg.setFfprobePath('../bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffprobe');
 
-ffmpeg.setFfprobePath('../bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffprobe');
+ffmpeg.setFfprobePath("ffprobe");
+ffmpeg.setFfmpegPath("ffmpeg");
+
 
 function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
     ffmpeg.ffprobe(audioFile, (err, metadata) => {
