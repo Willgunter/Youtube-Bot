@@ -14,22 +14,28 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
 
         const totalDuration = metadata.format.duration;
         const frameDuration = totalDuration / visemeFrames.length;
+        console.log(`${frameDuration}`)
+        console.log(`${metadata.format}`)
 
         const video = ffmpeg();
-        visemeFrames.forEach(frame => {
-            video.input(frame).inputOptions(`-t ${frameDuration}`);
+        visemeFrames.forEach((frame, index) => {
+            video.input(frame).inputOptions(`-t ${frameDuration}`)
+            // .outputOptions(`-vf "setpts=PTS+${index * frameDuration}/TB"`);
         });
 
         video.input(audioFile)
             .on('end', () => console.log('Viseme video created successfully'))
             .on('error', (err) => console.error('Error:', err))
+            .outputOptions('-shortest')
             .output(outputFile)
             .run();
     });
 }
 
-const visemeFrames = ['viseme1.jpg', 'viseme2.jpg', 'viseme3.jpg'];
-generateVisemeVideo(visemeFrames, 'audio.mp3', 'output_video.mp4');
+const visemeFrames = ['./not_smile.jpg', './face.jpg', './smile.jpg'];
+generateVisemeVideo(visemeFrames, './Gusty_Garden_Galaxy.mp3', './outputdd_video.mp4');
 
 // Dynamic Mapping: Use libraries like pocketsphinx or deepspeech to extract phoneme timings from audio.
 // Audio-Driven Animation: Match phoneme timestamps to visemes dynamically for more accurate lip-sync.
+// https://pypi.org/project/cmudict/
+// https://pypi.org/project/SpeechRecognition/
