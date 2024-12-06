@@ -1,6 +1,7 @@
 const ffmpeg = require('fluent-ffmpeg');
 const axios = require('axios');
 const fs = require('fs');
+require('dotenv').config();
 
 // ffmpeg.setFfmpegPath("../bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe");
 // ffmpeg.setFfmpegPath("../bin/ffmpeg-master-latest-win64-gpl/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe");
@@ -112,33 +113,6 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
                 })
                 
                 
-                const API_KEY = 'YOUR_ASSEMBLYAI_API_KEY';
-                const AUDIO_FILE_PATH = 'path_to_audio.wav';
-                
-                async function extractPhonemes() {
-                  const audioFile = fs.readFileSync(AUDIO_FILE_PATH);
-                  
-                  const response = await axios.post(
-                    'https://api.assemblyai.com/v2/transcript',
-                    audioFile,
-                    {
-                      headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Content-Type': 'audio/wav',
-                      },
-                      params: {
-                        phoneme: true,  // Enable phoneme-level output
-                      }
-                    }
-                  );
-                
-                  const phonemes = response.data.results[0].phonemes;
-                  phonemes.forEach(phoneme => {
-                    console.log(`Phoneme: ${phoneme.text}, Start: ${phoneme.start}, End: ${phoneme.end}`);
-                  });
-                }
-                
-                extractPhonemes();
 }
 
 const visemeFrames = ['./not_smile.jpg', './face.jpg', './smile.jpg'];
