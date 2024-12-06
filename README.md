@@ -4,7 +4,11 @@ A bot that creates shorts content and automatically uploads them to platforms
 checklist:
     - integrate with google gemini for script ✅
     - use gtts for text-to-speech ✅
-    - use something better (elevenLabs) for text-to-speech
+    - use something better (elevenLabs) for text-to-speech (check)
+    iuse 
+    - switch from using assemblyai / cmu library phonemes to gentle phoneme timings
+        - add timing stuff for all phonemes from cmudict not just the first one
+        - also handle case of "undefined (like a period or something)" for cmudict transcription stuff
     - editing
         - combine speech + audio into a video ✅
         - crop video to 16:9 or whatever ✅
