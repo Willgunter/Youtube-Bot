@@ -140,15 +140,15 @@ async function generateLipSyncVideo(
 }
 // 
 // function phonemeToSpriteX(phoneme) {
-//   Example mapping function: maps phoneme text to x position in the sprite sheet
-//   const mapping = {
-    // 'a': 0,
-    // 'e': spriteWidth,
+  // Example mapping function: maps phoneme text to x position in the sprite sheet
+  // const mapping = {
+    // 'a': 0, // a.jpg
+    // 'e': spriteWidth, // e.jpg etc...
     // 'o': spriteWidth * 2,
     // 'u': spriteWidth * 3,
     // 'p': spriteWidth * 4
-//   };
-//   return mapping[phoneme] || 0; // Default to first sprite if phoneme not found
+  // };
+  // return mapping[phoneme] || 0; // Default to first sprite if phoneme not found
 // }
 
 generateLipSyncVideo();
