@@ -146,24 +146,40 @@ async function createFrames(phoneme_list, fps, audioPath) {
   const frames = [];
 
   phoneme_list.forEach((phonemes_for_word) => {
-    
-    // Calculate how many frames this phoneme needs based on FPS
-    const duration = (phonemes_for_word.end_time/1000) - (phonemes_for_word.start_time/1000); // Duration in seconds
-    const frameCount = Math.round(duration * fps); // Frames for this phoneme
-    console.log(phonemes_for_word.start_time);
-    console.log(phonemes_for_word)
-    // Determine which .jpg file to use for this phoneme
-    const visemePath = getVisemeFilePath(phonemes_for_word.sounds[0].replace(/\d+/g, "")); // Map phoneme to .jpg file
+    const totalDuration = (phonemes_for_word.end_time / 1000) - (phonemes_for_word.start_time / 1000);
+    const phonemeCount = phonemes_for_word.sounds.length;
 
-    for (let i = 0; i < frameCount; i++) {
-      // Save the frame as an image file (using the .jpg directly)
-      const framePath = `./movieframes/frame-${sanitizedFilename}-${i}.jpg`;
-      fs.copyFileSync(visemePath, framePath); // Copy the viseme .jpg to the frame path
-      frames.push(framePath); // Store the frame path for later
-    }
+    const phonemeDuration = totalDuration / phonemeCount;
+
+    let numPhonemes = 0;
+    let numFrames = 0;
+    phonemes_for_word.sounds.forEach((phoneme, index) => {
+
+      // Calculate the start and end times for this phoneme based on its position in the word
+      const phonemeStartTime = phonemes_for_word.start_time / 1000 + phonemeDuration * index; // Start time of this phoneme in seconds
+      const phonemeEndTime = phonemes_for_word.start_time / 1000 + phonemeDuration * (index + 1); // End time of this phoneme in seconds
+ 
+      // Calculate how many frames this phoneme needs based on FPS
+      // const duration = (phonemes_for_word.end_time/1000) - (phonemes_for_word.start_time/1000); // Duration in seconds
+      // const frameCount = Math.round(duration * fps); // Frames for this phoneme
+
+      // Calculate how many frames this phoneme needs based on FPS
+      const frameCount = Math.round((phonemeEndTime - phonemeStartTime) * fps); // Frames for this phoneme
+
+      
+      // Determine which .jpg file to use for this phoneme
+      const visemePath = getVisemeFilePath(phoneme.replace(/\d+/g, "")); // Map phoneme to .jpg file
+      
+      for (let i = 0; i < frameCount; i++) {
+        // Save the frame as an image file (using the .jpg directly)
+        const framePath = `./movieframes/frame-${sanitizedFilename}-${numFrames+numPhonemes}.jpg`;
+        fs.copyFileSync(visemePath, framePath); // Copy the viseme .jpg to the frame path
+        frames.push(framePath); // Store the frame path for later
+        numFrames++;
+      }
+      numPhonemes++;
+    });
   });
-
-  
 }
 
 // Map phoneme to its corresponding .jpg file
@@ -190,7 +206,6 @@ function getVisemeFilePath(phoneme) {
     } else {
       return './frames/n.jpg';  // Default image if phoneme is not found
     }
-
 
     // 'a': './frames/a.jpg', // a.jpg AA AH AW AY IH IY W HH
     // 'e': './frames/e.jpg', // e.jpg AE EH EY S Z L SH ZH
