@@ -151,7 +151,6 @@ async function createFrames(phoneme_list, fps, audioPath) {
 
     const phonemeDuration = totalDuration / phonemeCount;
 
-    let numPhonemes = 0;
     let numFrames = 0;
     phonemes_for_word.sounds.forEach((phoneme, index) => {
 
@@ -172,12 +171,11 @@ async function createFrames(phoneme_list, fps, audioPath) {
       
       for (let i = 0; i < frameCount; i++) {
         // Save the frame as an image file (using the .jpg directly)
-        const framePath = `./movieframes/frame-${sanitizedFilename}-${numFrames+numPhonemes}.jpg`;
+        const framePath = `./movieframes/frame-${sanitizedFilename}-${numFrames}.jpg`;
         fs.copyFileSync(visemePath, framePath); // Copy the viseme .jpg to the frame path
         frames.push(framePath); // Store the frame path for later
         numFrames++;
       }
-      numPhonemes++;
     });
   });
 }

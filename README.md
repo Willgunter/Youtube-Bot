@@ -9,6 +9,7 @@ checklist:
     - switch from using assemblyai / cmu library phonemes to gentle phoneme timings
         - add timing stuff for all phonemes from cmudict not just the first one
         - also handle case of "undefined (like a period or something)" for cmudict transcription stuff
+        - while using cmu library, handle undefined logic (like if it is a certain length or longer, make it generate visemes randomly)
     - editing
         - combine speech + audio into a video ✅
         - crop video to 16:9 or whatever ✅
