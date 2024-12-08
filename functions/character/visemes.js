@@ -105,10 +105,9 @@ async function generateLipSyncVideo(
                         start_time: word.start,
                         end_time: word.end
                       }
-                      // ^^ use length of phoneme list to divide start / end time ONCE YOU GET THE FIRST ONE TO WORK
                       phoneme_list.push(new_phoneme)
                     } else {
-                      phoneme_list.push({sounds: ["AH"], start_time: word.start, end_time: word.end})
+                      phoneme_list.push({sounds: ["AH"], start_time: word.start, end_time: word.end}) // implement random logic for words certain length or more (>1 second?)
                     }
 
                   });
