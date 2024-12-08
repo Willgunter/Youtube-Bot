@@ -5,13 +5,42 @@ const axios = require('axios');
 require('dotenv').config();
 const CMUDict = require('cmudict').CMUDict;
 
+
+const now = new Date(); 
+
+// Options for US formatting
+const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false // Use 24-hour format; set to true for 12-hour format
+};
+
+// Get the formatted date and time in US format
+const formattedDate = now.toLocaleString('en-US', options);
+
+// Replace spaces with no spaces
+const formattedDateNoSpaces = formattedDate.replace(/ /g, '');
+const sanitizedFilename = sanitizeFilename(formattedDateNoSpaces);
+
+// don't export - we don't need in index.js
+function sanitizeFilename(filename) {
+return filename
+    .replace(/[\/\\:]/g, '_')  // Replace slashes and colons with underscores
+    .replace(/,/g, '_');        // Replace commas with underscores
+}
+
+
 async function generateLipSyncVideo(
     // audioPath, spriteSheetPath, phonemeData, 
     fps = 24) {
         const axios = require('axios');
         const fs = require('fs');
         const API_KEY = process.env.ASSEMBLYAI;
-        const audioPath = './ttsAudio12_05_2024_18_39_13.mp3';
+        const audioPath = './shortened-audiomp3.mp3';
         
         let phoneme_list = [];
         // async function transcribeAudio() {
@@ -72,23 +101,32 @@ async function generateLipSyncVideo(
                     if (cmudict.get(word.text) != undefined) {
 
                       let new_phoneme = {
-                        phonemes: cmudict.get(word.text.replace(/\./g, "")).split(' '), // .split(' ')
+                        sounds: cmudict.get(word.text.replace(/\./g, "")).split(' '), // .split(' ')
                         start_time: word.start,
                         end_time: word.end
                       }
                       // ^^ use length of phoneme list to divide start / end time ONCE YOU GET THE FIRST ONE TO WORK
                       phoneme_list.push(new_phoneme)
                     } else {
-                      phoneme_list.push({phonemes: ["AH"], start_time: word.start, end_time: word.end})
+                      phoneme_list.push({sounds: ["AH"], start_time: word.start, end_time: word.end})
                     }
+
                   });
                 }
-                // phoneme_list.forEach(word => {
-                //   console.log(`${word.phoneme_list[0]}+${word.start_time}+${word.end_time}`)
-                // })
-                createFrames(phoneme_list, 24, '/Gusty_Garden_Galaxy.mp3');
+                phoneme_list.forEach(word => {
+                  console.log(`${word.sounds[0]}`)//+${word.start_time}+${word.end_time}`)
+                })
+                createFrames(phoneme_list, 24, './shortened-audiomp3.mp3');
 
-                createFrames()
+                // createFrames()
+                // Use FFmpeg to combine frames into a video with audio
+                ffmpeg()
+                .input(`./movieframes/frame-${sanitizedFilename}-%d.jpg`)
+                .inputFPS(fps)
+                .input(audioPath)
+                .output('output.webm')
+                .on('end', () => console.log('Video created!'))
+                .run();
               } else if (statusResponse.data.status === 'failed') {
                 console.error('Transcription failed.');
                 return;
@@ -104,52 +142,68 @@ async function generateLipSyncVideo(
         
         // transcribeAudio();
         
-async function createFrames(phonemes, fps, audioPath) {
+async function createFrames(phoneme_list, fps, audioPath) {
   const frames = [];
 
-  phonemes.forEach((phoneme, index) => {
-    const { sound, start, end } = phoneme;
-
+  phoneme_list.forEach((phonemes_for_word) => {
+    
     // Calculate how many frames this phoneme needs based on FPS
-    const duration = end - start; // Duration in seconds
+    const duration = (phonemes_for_word.end_time/1000) - (phonemes_for_word.start_time/1000); // Duration in seconds
     const frameCount = Math.round(duration * fps); // Frames for this phoneme
-
+    console.log(phonemes_for_word.start_time);
+    console.log(phonemes_for_word)
     // Determine which .jpg file to use for this phoneme
-    const visemePath = getVisemeFilePath(phoneme.sound.replace(/\d+/g, "")); // Map phoneme to .jpg file
+    const visemePath = getVisemeFilePath(phonemes_for_word.sounds[0].replace(/\d+/g, "")); // Map phoneme to .jpg file
 
     for (let i = 0; i < frameCount; i++) {
       // Save the frame as an image file (using the .jpg directly)
-      const framePath = `frame-${index}-${i}.jpg`;
+      const framePath = `./movieframes/frame-${sanitizedFilename}-${i}.jpg`;
       fs.copyFileSync(visemePath, framePath); // Copy the viseme .jpg to the frame path
       frames.push(framePath); // Store the frame path for later
     }
   });
 
-  // Use FFmpeg to combine frames into a video with audio
-  ffmpeg()
-    .input('frame-%d-%d.jpg')
-    .inputFPS(fps)
-    .input(audioPath)
-    .output('output.webm')
-    .on('end', () => console.log('Video created!'))
-    .run();
+  
 }
 
 // Map phoneme to its corresponding .jpg file
 function getVisemeFilePath(phoneme) {
-  const mapping = {
-    'a': './frames/a.jpg', // a.jpg AA AH AW AY IH IY W HH
-    'e': './frames/e.jpg', // e.jpg AE EH EY S Z L SH ZH
-    'o': './frames/o.jpg', // o.jpg AO OW OY F V M
-    'u': './frames/u.jpg', // u.jpg UW UH
-    'p': './frames/p.jpg',  // p.jpg P B
-    'd': './frames/d.jpg', // CH, D, DH, JH, T,
-    'g': './frames/g.jpg', // G K NG
-    'n': './frames/n.jpg', // N R T TH Y
-    'er': './frames/er.jpg', // ER
+  // const mapping = {
+    if (['aa', 'ah', 'aw', 'ay', 'ih', 'iy', 'w', 'hh'].includes(phoneme.toLowerCase())) {
+      return './frames/a.jpg';
+    } else if (['ae', 'eh', 'ey', 's', 'z', 'l', 'sh', 'zh'].includes(phoneme.toLowerCase())) {
+      return './frames/e.jpg';
+    } else if (['ao', 'ow', 'oy', 'f', 'v', 'm'].includes(phoneme.toLowerCase())) {
+      return './frames/o.jpg';
+    } else if (['uw', 'uh'].includes(phoneme.toLowerCase())) {
+      return './frames/u.jpg';
+    } else if (['p', 'b'].includes(phoneme.toLowerCase())) {
+      return './frames/p.jpg';
+    } else if (['ch', 'd', 'dh', 'jh', 't'].includes(phoneme.toLowerCase())) {
+      return './frames/d.jpg';
+    } else if (['g', 'k', 'ng'].includes(phoneme.toLowerCase())) {
+      return './frames/g.jpg';
+    } else if (['n', 'r', 'th', 'y'].includes(phoneme.toLowerCase())) {
+      return './frames/n.jpg';
+    } else if (['er'].includes(phoneme.toLowerCase())) {
+      return './frames/er.jpg';
+    } else {
+      return './frames/n.jpg';  // Default image if phoneme is not found
+    }
 
-  };
-  return mapping[phoneme] || './frames/n.jpg'; // Default image if phoneme not found
+
+    // 'a': './frames/a.jpg', // a.jpg AA AH AW AY IH IY W HH
+    // 'e': './frames/e.jpg', // e.jpg AE EH EY S Z L SH ZH
+    // 'o': './frames/o.jpg', // o.jpg AO OW OY F V M
+    // 'u': './frames/u.jpg', // u.jpg UW UH
+    // 'p': './frames/p.jpg',  // p.jpg P B
+    // 'd': './frames/d.jpg', // CH, D, DH, JH, T,
+    // 'g': './frames/g.jpg', // G K NG
+    // 'n': './frames/n.jpg', // N R T TH Y
+    // 'er': './frames/er.jpg', // ER
+
+  // };
+  // return mapping[phoneme] || './frames/n.jpg'; // Default image if phoneme not found
 }
 
 // createFrames(text, 24, '/Gusty_Garden_Galaxy.mp3');
