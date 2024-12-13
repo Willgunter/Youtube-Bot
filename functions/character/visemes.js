@@ -181,41 +181,72 @@ async function createFrames(phoneme_list, fps, audioPath) {
 
 // Map phoneme to its corresponding .jpg file
 function getVisemeFilePath(phoneme) {
-  // const mapping = {
-    if (['aa', 'ah', 'aw', 'ay', 'ih', 'iy', 'w', 'hh'].includes(phoneme.toLowerCase())) {
-      return './frames/a.jpg';
-    } else if (['ae', 'eh', 'ey', 's', 'z', 'l', 'sh', 'zh'].includes(phoneme.toLowerCase())) {
-      return './frames/e.jpg';
-    } else if (['ao', 'ow', 'oy', 'f', 'v', 'm'].includes(phoneme.toLowerCase())) {
+    
+      // if (['aa', 'ah', 'aw', 'ay', 'ih', 'iy', 'w', 'hh'].includes(phoneme.toLowerCase())) {
+    if (['aa', 'ah', 'aw', 'ay', 'ih', 'iy', 'hh', 'ae', 'ao'].includes(phoneme.toLowerCase())) {
+        return './frames/aei.jpg';
+        
+    // } else if (['ae', 'eh', 'ey', 's', 'z', 'l', 'sh', 'zh'].includes(phoneme.toLowerCase())) {
+    } else if (['f', 'v'].includes(phoneme.toLowerCase())) {
+      return './frames/fv.jpg';
+
+    // } else if (['ao', 'ow', 'oy', 'f', 'v', 'm'].includes(phoneme.toLowerCase())) {
+    } else if (['ow', 'oy'].includes(phoneme.toLowerCase())) {
       return './frames/o.jpg';
+
+    // (ch j sh) 4) sh zh ch jh
+    // } else if (['uw', 'uh'].includes(phoneme.toLowerCase())) {
+    } else if (['sh', 'zh', 'ch', 'jh'].includes(phoneme.toLowerCase())) {
+      return './frames/ch_j_sh.jpg';
+
+    // } else if (['p', 'b'].includes(phoneme.toLowerCase())) {
+    } else if (['l'].includes(phoneme.toLowerCase())) {
+      return './frames/l.jpg';
+
+      // (b m p) 6) m p b
+    // } else if (['ch', 'd', 'dh', 'jh', 't'].includes(phoneme.toLowerCase())) {
+    } else if (['m', 'p', 'b'].includes(phoneme.toLowerCase())) {
+      return './frames/bmp.jpg';
+
+    // (e) 7) eh ey 
+    // } else if (['g', 'k', 'ng'].includes(phoneme.toLowerCase())) {
+    } else if (['eh', 'ey'].includes(phoneme.toLowerCase())) {
+      return './frames/e.jpg';
+
+    // (c d g k n s t x y z) 8) s z d dh t g k ng n y
+    // } else if (['n', 'r', 'th', 'y'].includes(phoneme.toLowerCase())) {
+    } else if (['s', 'z', 'd', 'dh', 't', 'g', 'k', 'ng', 'n', 'y'].includes(phoneme.toLowerCase())) {
+      return './frames/cdgknstxyz.jpg';
+
+    // } else if (['er'].includes(phoneme.toLowerCase())) {
     } else if (['uw', 'uh'].includes(phoneme.toLowerCase())) {
       return './frames/u.jpg';
-    } else if (['p', 'b'].includes(phoneme.toLowerCase())) {
-      return './frames/p.jpg';
-    } else if (['ch', 'd', 'dh', 'jh', 't'].includes(phoneme.toLowerCase())) {
-      return './frames/d.jpg';
-    } else if (['g', 'k', 'ng'].includes(phoneme.toLowerCase())) {
-      return './frames/g.jpg';
-    } else if (['n', 'r', 'th', 'y'].includes(phoneme.toLowerCase())) {
-      return './frames/n.jpg';
-    } else if (['er'].includes(phoneme.toLowerCase())) {
-      return './frames/er.jpg';
+
+    } else if (['r', 'er'].includes(phoneme.toLowerCase())) {
+      return './frames/r.jpg';
+
+    } else if (['th'].includes(phoneme.toLowerCase())) {
+      return './frames/th.jpg';
+
+    } else if (['w'].includes(phoneme.toLowerCase())) {
+      return './frames/qw.jpg';
+
     } else {
-      return './frames/n.jpg';  // Default image if phoneme is not found
+      return './frames/cdgknstxyz.jpg';  // Default image if phoneme is not found
     }
 
-    // 'a': './frames/a.jpg', // a.jpg AA AH AW AY IH IY W HH
-    // 'e': './frames/e.jpg', // e.jpg AE EH EY S Z L SH ZH
-    // 'o': './frames/o.jpg', // o.jpg AO OW OY F V M
-    // 'u': './frames/u.jpg', // u.jpg UW UH
-    // 'p': './frames/p.jpg',  // p.jpg P B
-    // 'd': './frames/d.jpg', // CH, D, DH, JH, T,
-    // 'g': './frames/g.jpg', // G K NG
-    // 'n': './frames/n.jpg', // N R T TH Y
-    // 'er': './frames/er.jpg', // ER
-
-  // };
-  // return mapping[phoneme] || './frames/n.jpg'; // Default image if phoneme not found
+    // (a e i) 1) aa ah aw ay ih iy hh ae ao
+    // (f v) 2) f v
+    // (o) 3) ow oy
+    // (ch j sh) 4) sh zh ch jh
+    // (l) 5) l
+    // (b m p) 6) m p b
+    // (e) 7) eh ey 
+    // (c d g k n s t x y z) 8) s z d dh t g k ng n y
+    // (u) 9) uw uh
+    // (r) 10) r er
+    // (th) 11) th
+    // (q w) 12) w
 }
 
 // createFrames(text, 24, '/Gusty_Garden_Galaxy.mp3');
