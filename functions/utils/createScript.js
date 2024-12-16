@@ -2,7 +2,7 @@
 // creates a script
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-async function createScript(scriptContent) {
+async function createScript(youtubeData) {
     // Make sure to include these imports:
     try {
         console.log("first line");
@@ -25,7 +25,30 @@ async function createScript(scriptContent) {
             top_k: 40, // for flash 8b model
             
         };
+
+        const scriptContent = `Create a YouTube video script and title for a youtube short summarizing the following trending videos, 
+        ignore the parts of the descriptions that don't see relevant. Here are the requirements, videos and the format I want:
         
+        REQUIREMENTS:
+        - Title must be engaging, clickbait-style, under 60 characters
+        - Target length: 30 seconds - 50 seconds of spoken content
+        - Use a conversational, energetic tone suitable for YouTube
+        - I am not worried about b-roll or who says what, just give me the text and I can take care of the editing later
+        - do not use quotes, parentheses, or brackets of any kind, again, just the text
+        - do not give me timestamps, I am just concerned about the script for now, this is a rough draft
+        - Return ONLY raw JSON with no markdown formatting, no code blocks, and no backticks.
+        - give the script value in one string, not a list of strings 
+        
+        YOUTUBE TRENDING VIDEOS:
+        ${youtubeData}        
+
+        FORMAT:
+        {
+            "title": "String: Catchy YouTube title",
+            "script": "String: Summarize the youtube trending page in an interesting way. Be / pretend to be an enthusiastic youtuber
+            while still keeping a formal tone"
+            }`;
+            
         const result = await model.generateContent({
             contents: [{ 
                 role: 'user',
@@ -67,33 +90,4 @@ async function createScript(scriptContent) {
     return {title: "Error message", script: "Error message"}
 }
 
-async function fetchYoutube() {
-    const axios = require("axios");
-
-    const key = "AIzaSyCq8AG5FJOBGCIaWZEG1WP4Wh5kE0e6vN8"
-    // Function to fetch trending videos
-    try {
-        const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=US&maxResults=15&key=${key}`;
-
-        const response = await axios.get(url);
-        const videos = response.data.items;
-
-        // Loop through videos and log details
-        videos.forEach(video => {
-
-        console.log(`Title: ${video.snippet.title}`);
-        console.log(`URL: https://www.youtube.com/watch?v=${video.id}`);
-        console.log(`Views: ${video.statistics.viewCount}`);
-        console.log(`Channel Name: ${video.snippet.channelTitle}`);
-        console.log(`Video Description: ${video.snippet.description}`);
-        console.log(`Likes: ${video.statistics.likeCount || 'No data'}`);
-        console.log('-----------------------------------------');
-        });
-    } catch (error) {
-        console.error('Error fetching trending videos:', error.message);
-    }
-
-}
-
-fetchYoutube();
-// module.exports = {createScript, fetchYoutube};
+module.exports = createScript;

@@ -26,6 +26,7 @@ const os = require('os');
 const path = require('path');
 
 const createScript = require("./utils/createScript.js"); // not using to save on api requests
+const fetchYoutube = require("./utils/fetchYoutubeTrendingData.js");
 const getCurrentDateTime = require('./utils/currentDateTime.js');
 const generateTTS = require('./utils/generateTTS.js');
 const speechUpload = require('./utils/speechUpload.js'); // not using because it is not uploaded to cloud yet
@@ -58,9 +59,7 @@ exports.helloWorld = onRequest({
     minInstances: 0,    // Minimum number of instances
     maxInstances: 100   // Maximum number of instances
 }, async (request, response) => {
-    // exports.helloWorld = onRequest.runWith({timeoutSeconds: "300s"}).async(async (request, response) => {
 
-        
         // TODO comment for testing (so we don't waste gemini)
         let responseFromGemini;
         let title;
@@ -68,28 +67,10 @@ exports.helloWorld = onRequest({
         try {
             do {
                 console.log("aosidhf;");
-                const prompt = `Create a YouTube video script and title for a video about anything you would like. 
+                // - Include potential B-roll or visual suggestions in parentheses
 
-                REQUIREMENTS:
-                - Title must be engaging, clickbait-style, under 60 characters
-                - Script should be in standard screenplay/video script format
-                - Include timestamps for each section
-                - Target length: 30 seconds - 50 seconds of spoken content
-                - Use a conversational, energetic tone suitable for YouTube
-                - I am not worried about b-roll or who says what, just give me the text and I can take care of the editing later
-                - do not use quotes, parentheses, or brackets of any kind, again, just the text
-                - do not give me timestamps, I am just concerned about the script for now, this is a rough draft
-                - Return ONLY raw JSON with no markdown formatting, no code blocks, and no backticks.
-                - give the script value in one string, not a list of strings 
-
-                FORMAT:
-                {
-                    "title": "String: Catchy YouTube title",
-                    "script": "String: summarize an entertaining wikipedia article in an interesting way. Be / pretend to be an enthusiastic youtuber
-                    while still keeping a formal tone"
-                    }`;
-                    // - Include potential B-roll or visual suggestions in parentheses
-            const scriptResponse = await createScript(prompt)
+            const youtubeTrendingStuff = await fetchYoutube();
+            const scriptResponse = await createScript(youtubeTrendingStuff);
             
             console.log(`Script: ${scriptResponse.script}`)
             responseFromGemini = scriptResponse.script;

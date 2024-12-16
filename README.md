@@ -1,6 +1,6 @@
 # Youtube-Bot
 A bot that creates shorts content and automatically uploads them to platforms
-
+   gh cs ports forward <remote-port>:<local-port> -c <codespace-name> 
 checklist:
     - integrate with google gemini for script ✅
     - use gtts for text-to-speech ✅
@@ -34,7 +34,7 @@ commands:
     - (in functions) firebase emulators:start
     - (in functions) yt-dlp -o "./videos/fall_guys.(%ext)s" -f bestvideo https://www.youtube.com/watch?v=oGSsgACIc6Q
         - (downloads fall guys video w/ best video quality (background audio is not necessary rn))
-
+    - gh cs ports forward <remote-port>:<local-port> -c <codespace-name> (ports to local machine I think) 
 
 TODO: (for self) eventually export setup / admin / other firebase stuff to utils
 - also tailor gemini prompt + tailor properties and stuff (look bat at like 69 in createScript.js idk what that does)
