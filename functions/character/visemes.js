@@ -4,35 +4,9 @@ const ffmpeg = require('fluent-ffmpeg');
 const axios = require('axios');
 require('dotenv').config();
 const CMUDict = require('cmudict').CMUDict;
+const getCurrentDateTime = require('../utils/currentDateTime');
 
-
-const now = new Date(); 
-
-// Options for US formatting
-const options = {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false // Use 24-hour format; set to true for 12-hour format
-};
-
-// Get the formatted date and time in US format
-const formattedDate = now.toLocaleString('en-US', options);
-
-// Replace spaces with no spaces
-const formattedDateNoSpaces = formattedDate.replace(/ /g, '');
-const sanitizedFilename = sanitizeFilename(formattedDateNoSpaces);
-
-// don't export - we don't need in index.js
-function sanitizeFilename(filename) {
-return filename
-    .replace(/[\/\\:]/g, '_')  // Replace slashes and colons with underscores
-    .replace(/,/g, '_');        // Replace commas with underscores
-}
-
+const sanitizedFilename = getCurrentDateTime();
 
 async function generateLipSyncVideo(
     // audioPath, spriteSheetPath, phonemeData, 
@@ -96,7 +70,7 @@ async function generateLipSyncVideo(
                   let cmudict = new CMUDict();
                   statusResponse.data.words.forEach(word => {
 
-                    console.log(word);
+                    // console.log("statusResponse : " + word);
                     // console.log(typeof cmudict.get(word.text.replace(/\./g, "")))
                     if (cmudict.get(word.text) != undefined) {
 
@@ -107,17 +81,18 @@ async function generateLipSyncVideo(
                       }
                       phoneme_list.push(new_phoneme)
                     } else {
+                      console.log("undefined")
                       phoneme_list.push({sounds: ["AH"], start_time: word.start, end_time: word.end}) // implement random logic for words certain length or more (>1 second?)
                     }
 
                   });
                 }
                 phoneme_list.forEach(word => {
-                  console.log(`${word.sounds[0]}`)//+${word.start_time}+${word.end_time}`)
+                  word.sounds.forEach(sounds =>{
+                    console.log(`${sounds}`)//+${word.start_time}+${word.end_time}`)
+                  })
                 })
                 createFrames(phoneme_list, 24, './shortened-audiomp3.mp3');
-
-                // createFrames()
                 // Use FFmpeg to combine frames into a video with audio
                 ffmpeg()
                 .input(`./movieframes/frame-${sanitizedFilename}-%d.jpg`)
@@ -126,6 +101,9 @@ async function generateLipSyncVideo(
                 .output('output.webm')
                 .on('end', () => console.log('Video created!'))
                 .run();
+                
+                await fs.rm("./frames");
+                
               } else if (statusResponse.data.status === 'failed') {
                 console.error('Transcription failed.');
                 return;
@@ -133,10 +111,13 @@ async function generateLipSyncVideo(
                 console.log('Processing...');
                 await new Promise(resolve => setTimeout(resolve, 5000));
               }
+              
+
             }
           } catch (error) {
             console.error('Error:', error.message);
           }
+
 }
         
         // transcribeAudio();
@@ -144,13 +125,13 @@ async function generateLipSyncVideo(
 async function createFrames(phoneme_list, fps, audioPath) {
   const frames = [];
 
+  let numFrames = 0;
   phoneme_list.forEach((phonemes_for_word) => {
     const totalDuration = (phonemes_for_word.end_time / 1000) - (phonemes_for_word.start_time / 1000);
     const phonemeCount = phonemes_for_word.sounds.length;
 
     const phonemeDuration = totalDuration / phonemeCount;
 
-    let numFrames = 0;
     phonemes_for_word.sounds.forEach((phoneme, index) => {
 
       // Calculate the start and end times for this phoneme based on its position in the word
@@ -171,6 +152,7 @@ async function createFrames(phoneme_list, fps, audioPath) {
       for (let i = 0; i < frameCount; i++) {
         // Save the frame as an image file (using the .jpg directly)
         const framePath = `./movieframes/frame-${sanitizedFilename}-${numFrames}.jpg`;
+        console.log("framecound: " + numFrames)
         fs.copyFileSync(visemePath, framePath); // Copy the viseme .jpg to the frame path
         frames.push(framePath); // Store the frame path for later
         numFrames++;
@@ -224,7 +206,7 @@ function getVisemeFilePath(phoneme) {
 
     } else if (['r', 'er'].includes(phoneme.toLowerCase())) {
       return './frames/r.jpg';
-
+      
     } else if (['th'].includes(phoneme.toLowerCase())) {
       return './frames/th.jpg';
 

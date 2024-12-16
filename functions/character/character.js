@@ -69,13 +69,17 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
     
                 if (inputAspect > targetAspect) {
                     // Video is wider than target aspect ratio
+                    console.log("wide")
                     const scaledHeight = targetHeight;
                     const scaledWidth = Math.round(scaledHeight * inputAspect);
                     scaleFilter = `scale=${scaledWidth}:${targetHeight}`;
                     const cropX = Math.round((scaledWidth - targetWidth) / 2);
                     cropFilter = `crop=${targetWidth}:${targetHeight}:${cropX}:0`;
+                } else if (inputAspect == targetAspect) {
+                    console.log("just right")
                 } else {
                     // Video is taller than target aspect ratio
+                    console.log("tall")
                     const scaledWidth = targetWidth;
                     const scaledHeight = Math.round(scaledWidth / inputAspect);
                     scaleFilter = `scale=${targetWidth}:${scaledHeight}`;
@@ -87,9 +91,9 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
     
                 ffmpeg(videoPath)
                 
-                .input('./1000004833-removebg-preview.png')
-                        .outputOptions('-filter_complex', 
-                          '[1:v]scale=960:1080[ov];'  // Explicitly scale the overlay to 1920x1080 (adjust to your desired size)
+                .input('./output.webm')
+                        .outputOptions('-filter_complex',
+                          '[1:v]scale=1920:1080[ov];'  // Explicitly scale the overlay to 1920x1080 (adjust to your desired size)
                           + '[0:v][ov]overlay=0:H/2')  // Position overlay at the bottom half of the background
                     // Apply audio filters
                     // .fps(30)

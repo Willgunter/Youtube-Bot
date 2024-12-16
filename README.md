@@ -15,6 +15,8 @@ checklist:
     - editing
         - combine speech + audio into a video ✅
         - crop video to 16:9 or whatever ✅
+        - make video crop properly
+        - add remove file capabilities in visemes.js
             I find a source of videos
         - figure out how to fetch random clips + validate they are Creative Commons certified 🟨
         - edit video (idk what specific things)
