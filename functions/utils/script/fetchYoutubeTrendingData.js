@@ -1,7 +1,7 @@
 async function fetchYoutube() {
     const axios = require("axios");
 
-    const key = "AIzaSyC3R4Yjq-VBPzBIOrqLlR7WTV5Ut4QwBr4"
+    const key = process.env.YOUTUBE_API_KEY;
     // Function to fetch trending videos
     try {
         const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=US&maxResults=15&key=${key}`;

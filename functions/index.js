@@ -16,8 +16,6 @@ const { ZapCap } = require("zapcap");
 const { pipeline } = require("stream/promises");
 require('dotenv').config();
 
-// NO @ffmpeg/ffmpeg !!!!!!!!!!!
-
 // const admin = require('firebase-admin')
 // const serviceAccount = require('./bot-e5092-firebase-adminsdk-n1rf1-d5e77f04c2.json');
 // const fs = require('fs');
@@ -31,7 +29,7 @@ const getCurrentDateTime = require('./utils/currentDateTime.js');
 const generateTTS = require('./utils/generateTTS.js');
 const speechUpload = require('./utils/speechUpload.js'); // not using because it is not uploaded to cloud yet
 const editVideo = require('./utils/editVideo.js');
-const generateSubtitles = require('./utils/generateSrtFile.js');
+const generateSubtitles = require('./utils/generateCaptionTimingFile.js');
 const addSubtitlesToVideo = require('./utils/addSubtitlesToVideo.js'); // currently working on
 const addCaptions = require('./utils/addCaptions.js');
 

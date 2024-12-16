@@ -1,3 +1,5 @@
+// might end up being a whole folder due to complexity
+// start with aidan ouckman code (see if he can give it to me) first
 
 async function speechUpload(localFilePath, currentTime, bucket) {
 

@@ -4,7 +4,7 @@ A bot that creates shorts content and automatically uploads them to platforms
 checklist:
     - integrate with google gemini for script ✅
     - use gtts for text-to-speech ✅
-    - use something better (elevenLabs) for text-to-speech (check)
+    - use something better (elevenLabs) for text-to-speech ---> generateTTS file (easy fix basically already have code)
     iuse 
     - switch from using assemblyai / cmu library phonemes to gentle phoneme timings
         - add timing stuff for all phonemes from cmudict not just the first one
@@ -28,6 +28,7 @@ checklist:
     - either get rid of addSubtitlesToVideos or do it through ZapCap (want to do it through subtitles but thats not super important and something for the future)
     - organize code (add / remove comments, move variable initiation around, remove unneeded imports, etc...)
     - add error handling / retry login / phone text if it goes wrong (in the future)
+    - swap like 100 in editVideo.js to be webm instead of mp4
 
 commands:
 

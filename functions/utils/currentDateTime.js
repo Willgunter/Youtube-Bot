@@ -18,16 +18,9 @@ function getCurrentDateTime() {
     
     // Replace spaces with no spaces
     const formattedDateNoSpaces = formattedDate.replace(/ /g, '');
-    const sanitizedFilename = sanitizeFilename(formattedDateNoSpaces);
+    const sanitizedFilename = formattedDateNoSpaces.replace(/[\/\\:]/g, '_').replace(/,/g, '_');
 
     return sanitizedFilename;
-}
-
-// don't export - we don't need in index.js
-function sanitizeFilename(filename) {
-    return filename
-        .replace(/[\/\\:]/g, '_')  // Replace slashes and colons with underscores
-        .replace(/,/g, '_');        // Replace commas with underscores
 }
 
 module.exports = getCurrentDateTime

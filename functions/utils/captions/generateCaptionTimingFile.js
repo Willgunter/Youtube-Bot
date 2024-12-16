@@ -38,7 +38,6 @@ async function generateSubtitles(videoFilePath, srtOutputPath) {
 
 }
 
-
 async function getSubtitleFile(transcriptId, fileFormat, headers) {
 
     if (!['srt', 'vtt'].includes(fileFormat)) {
