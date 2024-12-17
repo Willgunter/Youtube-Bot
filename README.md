@@ -1,6 +1,9 @@
 # Youtube-Bot
 A bot that creates shorts content and automatically uploads them to platforms
    gh cs ports forward <remote-port>:<local-port> -c <codespace-name> 
+
+    URL: https://refactored-parakeet-pp9gqxr7qq92rr66-8001.app.github.dev/bot-e5092/us-central1/helloWorld
+
 checklist:
     - integrate with google gemini for script ✅
     - use gtts for text-to-speech ✅

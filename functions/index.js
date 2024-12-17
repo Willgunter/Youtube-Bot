@@ -8,6 +8,11 @@
  */
 const { onRequest } = require("firebase-functions/v2/https");
 // const { logger } from "firebase-functions/logger";
+const { PubSub } = require('@google-cloud/pubsub');
+// const functions = require('firebase-functions');
+const functions = require('@google-cloud/functions-framework');
+
+const pubSubClient = new PubSub();
 
 const axios = require("axios");
 const fsExtra = require('fs-extra');
@@ -23,15 +28,17 @@ require('dotenv').config();
 const os = require('os');
 const path = require('path');
 
-const createScript = require("./utils/createScript.js"); // not using to save on api requests
-const fetchYoutube = require("./utils/fetchYoutubeTrendingData.js");
+const createScript = require("./utils/script/createScript.js"); // not using to save on api requests
+const fetchYoutube = require("./utils/script/fetchYoutubeTrendingData.js");
+
+
+const generateSubtitles = require('./utils/captions/generateCaptionTimingFile.js');
+const addCaptions = require('./utils/captions/addCaptions.js');
+
 const getCurrentDateTime = require('./utils/currentDateTime.js');
 const generateTTS = require('./utils/generateTTS.js');
 const speechUpload = require('./utils/speechUpload.js'); // not using because it is not uploaded to cloud yet
 const editVideo = require('./utils/editVideo.js');
-const generateSubtitles = require('./utils/generateCaptionTimingFile.js');
-const addSubtitlesToVideo = require('./utils/addSubtitlesToVideo.js'); // currently working on
-const addCaptions = require('./utils/addCaptions.js');
 
 // firebase emulators:start
 
@@ -51,13 +58,37 @@ const addCaptions = require('./utils/addCaptions.js');
 
 // START OF MAIN STUFF!!!
 
-exports.helloWorld = onRequest({
+// URL: https://refactored-parakeet-pp9gqxr7qq92rr66-8001.app.github.dev/bot-e5092/us-central1/helloWorld
+
+// handles core things like script creation, captioning, 
+exports.coreLogic = onRequest({
     timeoutSeconds: 540, // 9 minutes (max is 540 seconds for standard tier)
     memory: '2GiB',     // Increase memory allocation
     minInstances: 0,    // Minimum number of instances
     maxInstances: 100   // Maximum number of instances
 }, async (request, response) => {
+        // DELETE LATER
 
+    try {
+        // Trigger Function B via Pub/Sub
+        const message = { task: 'addCharacter', 
+            // captionsFileName: `./delete_later/withCaptions${currentTime}.mp4`, 
+            // webmFileName: `./delete_later/aswebm${currentTime}.webm`
+             };
+
+        await pubSubClient.topic('add-character').publishMessage({
+            data: Buffer.from(JSON.stringify(message)),
+        });
+        
+        console.log('Function B triggered via Pub/Sub');
+        
+        // Function A exits after triggering Function B
+        response.status(200).send('Function A is done.');
+    } catch (error) {
+        console.error('Error in Function A:', error);
+        response.status(500).send('Failed to execute Function A');
+    }
+    // DELETE LATER
         // TODO comment for testing (so we don't waste gemini)
         let responseFromGemini;
         let title;
@@ -127,23 +158,30 @@ exports.helloWorld = onRequest({
 
         // console.log(`Subtitles successfully added to: ${videoWithSubtitlesPath}`);
         
-        const webmFile = `./delete_later/aswebm${currentTime}.webm`
-        ffmpeg(videoWithCaptionsPath)
-          .output(webmFile)
-          .videoCodec('libvpx-vp9')  // Use VP9 codec for WebM
-          .audioCodec('libopus')     // Use Opus codec for audio
-          .on('progress', (progress) => {
-            console.log(`Processing: ${progress.percent.toFixed(2)}% done`);
-          })
-          .on('end', () => {
-            console.log('Conversion completed successfully!');
-          })
-          .on('error', (err) => {
-            console.error('Error during conversion:', err);
-          })
-          .run();
+        // const webmFile = `./delete_later/aswebm${currentTime}.webm`
+        // ffmpeg(videoWithCaptionsPath)
+        //   .output(webmFile)
       
-        response.send("works")
+        // SEND videoWithCaptionsPath and webmFile OVER TO CHARACTER FUNCTION
+        
+        try {
+            // Trigger Function B via Pub/Sub
+            const message = { task: 'addCharacter', 
+                captionsFileName: `./delete_later/withCaptions${currentTime}.mp4`, 
+                webmFileName: `./delete_later/aswebm${currentTime}.webm` };
+
+            await pubSubClient.topic('add-character').publishMessage({
+                data: Buffer.from(JSON.stringify(message)),
+            });
+            
+            console.log('Function B triggered via Pub/Sub');
+            
+            // Function A exits after triggering Function B
+            response.status(200).send('Function A is done.');
+        } catch (error) {
+            console.error('Error in Function A:', error);
+            response.status(500).send('Failed to execute Function A');
+        }
 
     } catch (error) {
         console.error("Failed to upload file:", error);
@@ -154,3 +192,52 @@ exports.helloWorld = onRequest({
     }
 
 });
+
+// Handles lip-sync and adding character to video
+// exports.character = 
+// functions.cloudEvent('addCharacter', cloudEvent => {
+    // The Pub/Sub message is passed as the CloudEvent's data payload.
+    // console.log("hi");
+    
+//   });
+  
+// functions.CloudEvent
+    // .topic('add-character')
+    // .onPublish(async (event, context) => {
+        // try {
+            // Decode the message from Pub/Sub
+            // const message = JSON.parse(Buffer.from(event.data, 'base64').toString());
+            // console.log('Received message:', message);
+
+            // Process the message
+            // if (message.task === 'addCharacter') {
+                // console.log('Processing video file:', message.captionsFileName);
+
+                // Example: WebM file name (replace with actual logic)
+                // const webmFile = `./delete_later/aswebm_${Date.now()}.webm`;
+
+                // Video processing logic with FFmpeg (example)
+                // ffmpeg(videoWithCaptionsPath)
+                //   .output(webmFile)
+                //   .videoCodec('libvpx-vp9')  // Use VP9 codec for WebM
+                //   .audioCodec('libopus')     // Use Opus codec for audio
+                //   .on('progress', (progress) => {
+                //     console.log(`Processing: ${progress.percent.toFixed(2)}% done`);
+                //   })
+                //   .on('end', () => {
+                //     console.log('Conversion completed successfully!');
+                //   })
+                //   .on('error', (err) => {
+                //     console.error('Error during conversion:', err);
+                //   })
+                //   .run();
+
+            // } else {
+                // console.log('Unknown task type:', message.task);
+            // }
+        // } catch (error) {
+            // console.error('Error processing Pub/Sub message:', error);
+        // }
+    // });
+    // .timeoutSeconds(540)  // Set timeout within the function declaration
+    // .memory('2GiB');      // Optionally increase memory if needed
