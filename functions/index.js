@@ -10,7 +10,8 @@ const { onRequest } = require("firebase-functions/v2/https");
 // const { logger } from "firebase-functions/logger";
 const { PubSub } = require('@google-cloud/pubsub');
 // const functions = require('firebase-functions');
-const functions = require('@google-cloud/functions-framework');
+// const functions = require('@google-cloud/functions-framework');
+// const functions = require("firebase-functions");
 
 const pubSubClient = new PubSub();
 
@@ -120,7 +121,7 @@ exports.coreLogic = onRequest({
     currentTime = getCurrentDateTime();
     // ttsAudioPath = path.join(os.tmpdir(), "YoutubeBotFiles/ttsAudio" + currentTime + ".mp3");
     ttsAudioPath = "./delete_later/ttsAudio" + currentTime + ".mp3";
-
+    // npm install firebase-functions-test@latest --save-dev npm isntall firebase-functions@latest firebase-admin@latest --save
 
     console.log("basic stuff completed");
 
@@ -200,10 +201,31 @@ exports.coreLogic = onRequest({
     // console.log("hi");
     
 //   });
-  
+const { onMessagePublished } = require('firebase-functions/v2/pubsub');
+
+// Pub/Sub trigger for the 'add-character' topic
+exports.character = onMessagePublished('add-character', (event) => {
+    //   try {
+        // Decode the message from base64
+        // const message = event.data.message ? Buffer.from(event.data.message.data, 'base64').toString() : null;
+        
+        // console.log('Received message:', message);
+        console.log('Processing task:');
+
+    // Add your processing logic here
+    // if (message) {
+    // } else {
+    //   console.log('No message data received.');
+    // }
+//   } catch (error) {
+    // console.error('Error processing Pub/Sub message:', error);
+//   }
+});
+
+// exports.character = functions.pubsub.topic("add-character")
 // functions.CloudEvent
     // .topic('add-character')
-    // .onPublish(async (event, context) => {
+    // .onPublish(async (event, context) => {});
         // try {
             // Decode the message from Pub/Sub
             // const message = JSON.parse(Buffer.from(event.data, 'base64').toString());
