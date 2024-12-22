@@ -9,6 +9,7 @@ checklist:
     - use gtts for text-to-speech ✅
     - use something better (elevenLabs) for text-to-speech ---> generateTTS file (easy fix basically already have code)
     iuse 
+    - 
     - switch from using assemblyai / cmu library phonemes to gentle phoneme timings
         - add timing stuff for all phonemes from cmudict not just the first one
         - also handle case of "undefined (like a period or something)" for cmudict transcription stuff
@@ -40,7 +41,14 @@ commands:
         - (downloads fall guys video w/ best video quality (background audio is not necessary rn))
     - gh cs ports forward <remote-port>:<local-port> -c <codespace-name> (ports to local machine I think) 
 
-TODO: (for self) eventually export setup / admin / other firebase stuff to utils
+TODO:
+    - next get video together 
+        - remove background for cat
+            - make a new .png from shrinking cat and centering it at the bottom 
+            using ffmpeg commands
+        - then work backwards to add stuff in .character pub / sub callback function to create video
+    - do stuff for actual video content - might be pretty close to being done tho i forgot
+ (for self) eventually export setup / admin / other firebase stuff to utils
 - also tailor gemini prompt + tailor properties and stuff (look bat at like 69 in createScript.js idk what that does)
 - or figure out how to put sources in description of video (using generationConfig from gemini api) (https://ai.google.dev/api/generate-content?_gl=1*3prpvu*_up*MQ..&gclid=CjwKCAjw1NK4BhAwEiwAVUHPUB06YslWhuNcHUGpG1kNYBUnoGh8LmaDMJEBoQ3TG48MmRPC0W5pFBoCWaoQAvD_BwE#v1beta.GenerationConfig)
 also useful commands are in variousstuff.js file

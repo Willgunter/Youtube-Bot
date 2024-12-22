@@ -217,54 +217,27 @@ exports.character = onMessagePublished('add-character', (event) => {
         // console.log('Received message:', message);
         console.log('Processing task:');
 
-    // Add your processing logic here
-    // if (message) {
-    // } else {
-    //   console.log('No message data received.');
-    // }
-//   } catch (error) {
+        try {
+
+            ffmpeg(videoWithCaptionsPath)
+            .output(webmFile)
+            .videoCodec('libvpx-vp9')  // Use VP9 codec for WebM
+            .audioCodec('libopus')     // Use Opus codec for audio
+            .on('progress', (progress) => {
+                console.log(`Processing: ${progress.percent.toFixed(2)}% done`);
+            })
+            .on('end', () => {
+                console.log('Conversion completed successfully!');
+            })
+            .on('error', (err) => {
+                console.error('Error during conversion:', err);
+            })
+            .run();
+        } catch {
+            console.error("bad")
+        }
     // console.error('Error processing Pub/Sub message:', error);
 //   }
 });
-
-// exports.character = functions.pubsub.topic("add-character")
-// functions.CloudEvent
-    // .topic('add-character')
-    // .onPublish(async (event, context) => {});
-        // try {
-            // Decode the message from Pub/Sub
-            // const message = JSON.parse(Buffer.from(event.data, 'base64').toString());
-            // console.log('Received message:', message);
-
-            // Process the message
-            // if (message.task === 'addCharacter') {
-                // console.log('Processing video file:', message.captionsFileName);
-
-                // Example: WebM file name (replace with actual logic)
-                // const webmFile = `./delete_later/aswebm_${Date.now()}.webm`;
-
-                // Video processing logic with FFmpeg (example)
-                // ffmpeg(videoWithCaptionsPath)
-                //   .output(webmFile)
-                //   .videoCodec('libvpx-vp9')  // Use VP9 codec for WebM
-                //   .audioCodec('libopus')     // Use Opus codec for audio
-                //   .on('progress', (progress) => {
-                //     console.log(`Processing: ${progress.percent.toFixed(2)}% done`);
-                //   })
-                //   .on('end', () => {
-                //     console.log('Conversion completed successfully!');
-                //   })
-                //   .on('error', (err) => {
-                //     console.error('Error during conversion:', err);
-                //   })
-                //   .run();
-
-            // } else {
-                // console.log('Unknown task type:', message.task);
-            // }
-        // } catch (error) {
-            // console.error('Error processing Pub/Sub message:', error);
-        // }
-    // });
     // .timeoutSeconds(540)  // Set timeout within the function declaration
     // .memory('2GiB');      // Optionally increase memory if needed

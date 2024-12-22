@@ -8,20 +8,14 @@ ffmpeg.setFfmpegPath("ffmpeg");
 
 const path = require('path');
 
+// all this function does is position an overlay video / image on top
+// in the bottom half of a base video. Most of this code is to make sure
+// base video is correct ratio and correct if is not
 function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
-
-
-    // ffmpeg('edited12_05_2024_19_38_54.webm')
-        // .input('smile.jpg')
-        // .complexFilter('overlay=W-w:H-h')
-        // .output('output.webm')
-        // .on('end', () => console.log('Overlay added successfully'))
-        // .on('error', err => console.error('Error:', err))
-        // .save('test.webm');
 
     videoPath = './edited12_05_2024_19_38_54.webm';
     outputPath = './video.webm';
-    audioPath = './Gusty_Garden_Galaxy.mp3';
+    overlayContent = './output.webm';
     ffmpeg.ffprobe(videoPath, (err, metadata) => {
     
                 // vvv basic error checking vvv
@@ -87,7 +81,7 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
     
                 ffmpeg(videoPath)
                 
-                .input('./output.webm')
+                .input(overlayContent) // './output.webm
                         .outputOptions('-filter_complex',
                           '[1:v]scale=1920:1080[ov];'  // Explicitly scale the overlay to 1920x1080 (adjust to your desired size)
                           + '[0:v][ov]overlay=0:H/2')  // Position overlay at the bottom half of the background
