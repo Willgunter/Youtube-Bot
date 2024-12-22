@@ -77,7 +77,7 @@ exports.coreLogic = onRequest({
             // webmFileName: `./delete_later/aswebm${currentTime}.webm`
              };
 
-        await pubSubClient.topic('add-character').publishMessage({
+        pubSubClient.topic('add-character').publishMessage({
             data: Buffer.from(JSON.stringify(message)),
         });
         
@@ -89,6 +89,8 @@ exports.coreLogic = onRequest({
         console.error('Error in Function A:', error);
         response.status(500).send('Failed to execute Function A');
     }
+
+    console.error("idk yet");
     // DELETE LATER
         // TODO comment for testing (so we don't waste gemini)
         let responseFromGemini;
