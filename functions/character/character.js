@@ -11,6 +11,7 @@ const path = require('path');
 // all this function does is position an overlay video / image on top
 // in the bottom half of a base video. Most of this code is to make sure
 // base video is correct ratio and correct if is not
+// This code works properly, but cat images need to be scaled first ideally
 function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
 
     videoPath = './edited12_05_2024_19_38_54.webm';
