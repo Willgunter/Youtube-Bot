@@ -59,7 +59,7 @@ const editVideo = require('./utils/editVideo.js');
 
 // START OF MAIN STUFF!!!
 
-// URL: https://refactored-parakeet-pp9gqxr7qq92rr66-8001.app.github.dev/bot-e5092/us-central1/helloWorld
+// URL: https://refactored-parakeet-pp9gqxr7qq92rr66-8001.app.github.dev/bot-e5092/us-central1/coreLogic
 
 // handles core things like script creation, captioning, 
 exports.coreLogic = onRequest({
@@ -204,6 +204,9 @@ exports.coreLogic = onRequest({
 const { onMessagePublished } = require('firebase-functions/v2/pubsub');
 
 // Pub/Sub trigger for the 'add-character' topic
+// emulator commands: 
+// 1) start emulator check
+// 2) curl -X PUT http://localhost:8085/v1/projects/bot-e5092/topics/add-character
 exports.character = onMessagePublished('add-character', (event) => {
     //   try {
         // Decode the message from base64
