@@ -46,6 +46,7 @@ TODO:
         - remove background for cat
             - make a new .png from shrinking cat and centering it at the bottom 
             using ffmpeg commands - def most important
+        - move character pub / sub function into a different file then export at the top?
         - then work backwards to add stuff in .character pub / sub callback function to create video
     - do stuff for actual video content - might be pretty close to being done tho i forgot
  (for self) eventually export setup / admin / other firebase stuff to utils
