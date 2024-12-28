@@ -43,11 +43,14 @@ commands:
 
 TODO:
 - operations for frames:
-    (down to cdwhatever is complete, but remove bkng of aei again bc its weird (just feed it through adobe))
+    (down to e is complete, but remove bkng of aei again bc its weird (just feed it through adobe))
+
     - crop it w/ dimensions - ffmpeg -i <>.jpg -vf "crop=in_w:in_h/2:0:in_h/3" <>.jpg
+
     - scale w/ 3/4 on each side I think - ffmpeg -i input.jpg -vf "scale=iw*3/4:ih*3/4" output.jpg
 
     - scale again w/ ffmpeg -i input.jpn -vf scale=1080:1920*0.35 output.jpg
+    
     - remove background w/ adobe
     - both .png and .jpg work
     
