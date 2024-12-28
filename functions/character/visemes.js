@@ -96,9 +96,13 @@ async function generateLipSyncVideo(
                 // Use FFmpeg to combine frames into a video with audio
                 ffmpeg()
                 .input(`./movieframes/frame-${sanitizedFilename}-%d.jpg`)
-                .inputFPS(fps)
+                .inputFPS(fps)                
                 .input(audioPath)
                 .output('output.webm')
+                .outputOptions([
+                    '-filter_complex',
+                    '[0:v][1:v]overlay=(W-w)/2:(H-h)+125'  // Apply overlay (SHOULD WORK AS LONG AS VIDEO IS PRESCALED TO 1920X1080 AND VISEMES ARE PRESCALED)
+                ])
                 .on('end', () => console.log('Video created!'))
                 .run();
                 

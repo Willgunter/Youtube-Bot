@@ -42,11 +42,19 @@ commands:
     - gh cs ports forward <remote-port>:<local-port> -c <codespace-name> (ports to local machine I think) 
 
 TODO:
+- operations for frames:
+ 
+    - crop it w/ dimensions - ffmpeg -i <>.jpg -vf "crop=in_w:in_h/2:0:in_h/3" <>.jpg
+    - scale w/ 3/4 on each side I think
+    - remove background w/ adobe
+    - scale again w/ :'[1:v]scale=1080:1920*0.35[scaledOverlay];' +
+
     - next get video together 
         - go through every frame and adjust its ratios so that it fits with 1080x1920 and remove its background as well
         - move character pub / sub function into a different file then export at the top?
         - then work backwards to add stuff in .character pub / sub callback function to create video
     - do stuff for actual video content
+    - put stuff from character.js into editVideo or something, just get rid of it basically cus its only like 1 command basically
     - break apart visemes.js into like 3 seperate parts (generate vid, create frames, map visemes to files)
     - might be pretty close to being done tho I forgot
  (for self) eventually export setup / admin / other firebase stuff to utils
