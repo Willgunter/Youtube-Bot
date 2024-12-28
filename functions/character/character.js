@@ -16,9 +16,9 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
 
     // videoPath = './edited12_05_2024_19_38_54.webm'; // 1 minute 3 second long subway surfers video
     videoPath = './shortened_subway_surfers_clip.webm'; // 10 second long subway surfers video used for testing
-    outputPath = './video.webm';
+    outputPath = './video.mp4';
     // overlayContent = './output.webm';
-    overlayContent = './aei_cropped_scaled_34_no_bkgrnd_adobe.png'; // './aei_cropped_scaled.jpg';
+    overlayContent = './frames/aei_cropped_scaled_34_no_bkgnd_adobe_1080_1920.png'; // './aei_cropped_scaled.jpg';
     ffmpeg.ffprobe(videoPath, (err, metadata) => {
     
                 // vvv basic error checking vvv
@@ -86,11 +86,11 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
                     // Step 1: Scale and crop the base video to 1080x1920
                     '[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2[base];' +
                     // Step 2: Scale the overlay to 1080x1920
-                    '[1:v]scale=1080:1920*0.35[scaledOverlay];' +
+                    // '[1:v]scale=1080:1920*0.35[scaledOverlay];' +
                     // Step 3: Overlay the scaled overlay onto the padded/cropped base video
-                    '[base][scaledOverlay]overlay=(W-w)/2:(H-h)+100')
+                    '[base][1:v]overlay=(W-w)/2:(H-h)+100')
                     // .fps(30)
-                    .format('webm')
+                    .format('mp4')
                     .on('start', (commandLine) => {
                         console.log('Started FFmpeg with command:', commandLine);
                         console.log(`Output target dimensions: ${targetWidth}x${targetHeight}`);

@@ -43,12 +43,14 @@ commands:
 
 TODO:
 - operations for frames:
- 
+    (down to bmp is complete)
     - crop it w/ dimensions - ffmpeg -i <>.jpg -vf "crop=in_w:in_h/2:0:in_h/3" <>.jpg
-    - scale w/ 3/4 on each side I think
-    - remove background w/ adobe
-    - scale again w/ :'[1:v]scale=1080:1920*0.35[scaledOverlay];' +
+    - scale w/ 3/4 on each side I think - ffmpeg -i input.jpg -vf "scale=iw*5/7:ih*5/7" output.jpg
 
+    - scale again w/ :'[1:v]scale=1080:1920*0.35[scaledOverlay];' +
+    - remove background w/ adobe
+    - both .png and .jpg work
+    
     - next get video together 
         - go through every frame and adjust its ratios so that it fits with 1080x1920 and remove its background as well
         - move character pub / sub function into a different file then export at the top?
