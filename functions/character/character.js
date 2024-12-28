@@ -18,7 +18,7 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
     videoPath = './shortened_subway_surfers_clip.webm'; // 10 second long subway surfers video used for testing
     outputPath = './video.mp4';
     // overlayContent = './output.webm';
-    overlayContent = './frames/aei_cropped_scaled_34_no_bkgnd_adobe_1080_1920.png'; // './aei_cropped_scaled.jpg';
+    overlayContent = './frames/cdgknstxyz.png'; // './aei_cropped_scaled.jpg';
     ffmpeg.ffprobe(videoPath, (err, metadata) => {
     
                 // vvv basic error checking vvv
