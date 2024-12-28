@@ -100,77 +100,15 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
                 const audioSpeed = 1.0
     
                 ffmpeg(videoPath)
-                
-                // .videoFilters([
-                    // scaleFilter,
-                    // cropFilter
-                // ])
                 .input(overlayContent) // './output.webm
                 .outputOptions('-filter_complex',
                     // Step 1: Scale and crop the base video to 1080x1920
                     '[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2[base];' +
                     // Step 2: Scale the overlay to 1080x1920
-                    // '[1:v]scale=1080:1920[overlay];' +
-                    // '[1:v]scale=iw*0.5:ih*0.5[scaledOverlay];' +
                     '[1:v]scale=1080:1920*0.35[scaledOverlay];' +
                     // Step 3: Overlay the scaled overlay onto the padded/cropped base video
                     '[base][scaledOverlay]overlay=(W-w)/2:(H-h)+100'
                 )
-                  
-                        //  .outputOptions('-filter_complex',
-                        //   '[1:v]scale=1080:1920[ov];' // there was a ; at the end  // Explicitly scale the overlay to 1920x1080 (adjust to your desired size)
-                        //   + 
-                        //   '[0:v][ov]overlay=(W-w)/2:(H-h)+125')  // Position overlay at the bottom half of the background
-                          //     x: '(W-w)/2', // Center horizontally
-                          //     y: 'H-h',     // Align bottom
-                        //   .complexFilter([
-                            // {
-                                // filter: 'crop',
-                                // options: {
-                            //       w: 'min(iw,1920)', // Crop width to 1920 if input is wider
-                            //       h: 'min(ih,1080)', // Crop height to 1080 if input is taller
-                            //       x: '(iw-1920)/2',  // Center horizontally
-                            //       y: '(ih-1080)/2',  // Center vertically
-                            //     },
-                            //   },
-
-                            // {
-                            //     filter: 'pad',
-                            //     options: {
-                            //       w: 1920, // Target width
-                            //       h: 1080, // Target height
-                            //       x: '(1920-iw)/2', // Center horizontally
-                            //       y: '(1080-ih)/2', // Center vertically
-                            //       color: 'black', // Padding color (default is black)
-                            //     },
-                            //   },
-
-                            // {
-                            //   filter: 'overlay',
-                            //   options: {
-                            //   },
-                            // },
-                        //   ])
-                        //   complexFilter([
-                        //     // Crop the overlay image
-                        //     {
-                        //       filter: 'crop',
-                        //       options: `${cropWidth}:${cropHeight}:${cropX}:${cropY}`,
-                        //       inputs: '[1:v]',
-                        //       outputs: 'croppedOverlay',
-                        //     },
-                        //     // Overlay the cropped image on the base video
-                        //     {
-                        //       filter: 'overlay',
-                        //       options: {
-                        //         x: '(W-w)/2', // Center horizontally
-                        //         y: 'H-h',     // Align bottom
-                        //       },
-                        //       inputs: ['[0:v]', 'croppedOverlay'],
-                        //       outputs: 'finalOutput',
-                        //     },
-                        //   ])
-                    // Apply audio filters
                     // .fps(30)
                     .format('webm')
                     .on('start', (commandLine) => {
@@ -190,8 +128,6 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
                     })
                     .save(outputPath);
                 })
-                
-                
 }
 
 const visemeFrames = ['./not_smile.jpg', './face.jpg', './smile.jpg'];

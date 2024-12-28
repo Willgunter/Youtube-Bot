@@ -45,7 +45,7 @@ TODO:
     - next get video together 
         - move character pub / sub function into a different file then export at the top?
         - then work backwards to add stuff in .character pub / sub callback function to create video
-    - do stuff for actual video content 
+    - do stuff for actual video content
     - might be pretty close to being done tho I forgot
  (for self) eventually export setup / admin / other firebase stuff to utils
 - also tailor gemini prompt + tailor properties and stuff (look bat at like 69 in createScript.js idk what that does)
