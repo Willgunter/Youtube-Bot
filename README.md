@@ -9,7 +9,7 @@ checklist:
     - use gtts for text-to-speech ✅
     - use something better (elevenLabs) for text-to-speech ---> generateTTS file (easy fix basically already have code)
     iuse 
-    - 
+    - go to character.js and make it give an error if it is < 2 minutes long
     - switch from using assemblyai / cmu library phonemes to gentle phoneme timings
         - add timing stuff for all phonemes from cmudict not just the first one
         - also handle case of "undefined (like a period or something)" for cmudict transcription stuff
@@ -43,12 +43,10 @@ commands:
 
 TODO:
     - next get video together 
-        - remove background for cat
-            - make a new .png from shrinking cat and centering it at the bottom 
-            using ffmpeg commands - def most important
         - move character pub / sub function into a different file then export at the top?
         - then work backwards to add stuff in .character pub / sub callback function to create video
-    - do stuff for actual video content - might be pretty close to being done tho i forgot
+    - do stuff for actual video content 
+    - might be pretty close to being done tho I forgot
  (for self) eventually export setup / admin / other firebase stuff to utils
 - also tailor gemini prompt + tailor properties and stuff (look bat at like 69 in createScript.js idk what that does)
 - or figure out how to put sources in description of video (using generationConfig from gemini api) (https://ai.google.dev/api/generate-content?_gl=1*3prpvu*_up*MQ..&gclid=CjwKCAjw1NK4BhAwEiwAVUHPUB06YslWhuNcHUGpG1kNYBUnoGh8LmaDMJEBoQ3TG48MmRPC0W5pFBoCWaoQAvD_BwE#v1beta.GenerationConfig)
