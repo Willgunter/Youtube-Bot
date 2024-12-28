@@ -43,9 +43,11 @@ commands:
 
 TODO:
     - next get video together 
+        - go through every frame and adjust its ratios so that it fits with 1080x1920 and remove its background as well
         - move character pub / sub function into a different file then export at the top?
         - then work backwards to add stuff in .character pub / sub callback function to create video
     - do stuff for actual video content
+    - break apart visemes.js into like 3 seperate parts (generate vid, create frames, map visemes to files)
     - might be pretty close to being done tho I forgot
  (for self) eventually export setup / admin / other firebase stuff to utils
 - also tailor gemini prompt + tailor properties and stuff (look bat at like 69 in createScript.js idk what that does)

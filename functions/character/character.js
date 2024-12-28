@@ -19,25 +19,6 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
     outputPath = './video.webm';
     // overlayContent = './output.webm';
     overlayContent = './aei_cropped_scaled_34_no_bkgrnd_adobe.png'; // './aei_cropped_scaled.jpg';
-    // complexFilter([
-    //     // Crop the overlay image
-    //     {
-    //       filter: 'crop',
-    //       options: `${cropWidth}:${cropHeight}:${cropX}:${cropY}`,
-    //       inputs: '[1:v]',
-    //       outputs: 'croppedOverlay',
-    //     },
-    //     // Overlay the cropped image on the base video
-    //     {
-    //       filter: 'overlay',
-    //       options: {
-    //         x: '(W-w)/2', // Center horizontally
-    //         y: 'H-h',     // Align bottom
-    //       },
-    //       inputs: ['[0:v]', 'croppedOverlay'],
-    //       outputs: 'finalOutput',
-    //     },
-    //   ])
     ffmpeg.ffprobe(videoPath, (err, metadata) => {
     
                 // vvv basic error checking vvv
@@ -107,8 +88,7 @@ function generateVisemeVideo(visemeFrames, audioFile, outputFile) {
                     // Step 2: Scale the overlay to 1080x1920
                     '[1:v]scale=1080:1920*0.35[scaledOverlay];' +
                     // Step 3: Overlay the scaled overlay onto the padded/cropped base video
-                    '[base][scaledOverlay]overlay=(W-w)/2:(H-h)+100'
-                )
+                    '[base][scaledOverlay]overlay=(W-w)/2:(H-h)+100')
                     // .fps(30)
                     .format('webm')
                     .on('start', (commandLine) => {
