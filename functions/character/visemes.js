@@ -8,13 +8,14 @@ const getCurrentDateTime = require('../utils/currentDateTime');
 
 const sanitizedFilename = getCurrentDateTime();
 
+const audioPath = './9_second_audio.mp3';
+
 async function generateLipSyncVideo(
     // audioPath, spriteSheetPath, phonemeData, 
     fps = 24) {
         const axios = require('axios');
         const fs = require('fs');
         const API_KEY = process.env.ASSEMBLYAI;
-        const audioPath = './shortened-audiomp3.mp3';
         
         let phoneme_list = [];
         // async function transcribeAudio() {
@@ -91,6 +92,7 @@ async function generateLipSyncVideo(
                   word.sounds.forEach(sounds =>{
                     console.log(`${sounds}`)//+${word.start_time}+${word.end_time}`)
                   })
+                  console.log(`${word.start_time}+${word.end_time}`)
                 })
 
                 createFrames(phoneme_list, 24, audioPath);
