@@ -52,7 +52,7 @@ TODO:
     - scale again w/ ffmpeg -i input.jpn -vf scale=1080:1920*0.35 output.jpg
     
     - remove background w/ adobe
-    - both .png and .jpg work
+    - both .png and .jpg work ok new update just kidding .jpg does not work quite so well hahaha ( 2 days of coding gone out the window :C )
     
     - next get video together
         - go through every frame and adjust its ratios so that it fits with 1080x1920 and remove its background as well

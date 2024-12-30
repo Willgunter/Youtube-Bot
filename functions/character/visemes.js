@@ -92,21 +92,50 @@ async function generateLipSyncVideo(
                     console.log(`${sounds}`)//+${word.start_time}+${word.end_time}`)
                   })
                 })
-                createFrames(phoneme_list, 24, './shortened-audiomp3.mp3');
+
+                createFrames(phoneme_list, 24, audioPath);
+                // error somewhere after here
+
                 // Use FFmpeg to combine frames into a video with audio
-                ffmpeg()
-                .input(`./movieframes/frame-${sanitizedFilename}-%d.jpg`)
-                .inputFPS(fps)                
+                ffmpeg(`./short_subway_fixed.mp4`)
+                .input(`./movieframes/frame-${sanitizedFilename}-%d.png`)
+                .inputFPS(fps)
                 .input(audioPath)
-                .output('output.webm')
+                .output('output.mp4')
                 .outputOptions([
                     '-filter_complex',
-                    '[0:v][1:v]overlay=(W-w)/2:(H-h)+125'  // Apply overlay (SHOULD WORK AS LONG AS VIDEO IS PRESCALED TO 1920X1080 AND VISEMES ARE PRESCALED)
-                ])
+                    '[0:v][1:v]overlay=0:0',
+                  ]) 
                 .on('end', () => console.log('Video created!'))
+                // .on('stderr', (stderrLine) => console.log('FFmpeg stderr: ' + stderrLine)) // Capture errors here
+                // .on('error', (err) => console.error('Error:', err)) // Handle FFmpeg process errors
                 .run();
+                // works --> // ffmpeg -i short_subway_fixed.mp4 -i frames/aei.png -filter_complex "[0:v][1:v]overlay=0:0" output.mp4
+                // ffmpeg -i short_subway_fixed.mp4 -i movieframes/frame-12_29_2024_19_42_24-24.png -filter_complex "[0:v][1:v]overlay=0:0" output.mp4
+                // ffmpeg -i short_subway_fixed.mp4 -framerate 30 -i movieframes/frame-12_29_2024_19_42_24-%d.png -filter_complex "[0:v][1:v]overlay=0:0" output.mp4
+                // ffmpeg -thread_queue_size 1024 -framerate 30 -i movieframes/frame-12_30_2024_24_34_17-%d.png output.mp4 -loglevel verbose
+                // ffmpeg -framerate 30 -i movieframes/frame-12_30_2024_24_34_17-
+                // ffmpeg -framerate 30 -i image%03d.png -c:v libx264 -r 30 -pix_fmt yuv420p output.mp4
+                // %d.png -c:v libx264 -r 30 -pix_fmt yuv420p output.mp4
+               
+
+    //             ffmpeg('./shortened_subway_surfers_clip.webm') // Input 0: Base video
+    // ls frame-*.png
+    // .input(`./movieframes/frame-${sanitizedFilename}-%d.png`) // Input 1: Image sequence
+    // .inputFPS(fps) // Set the frame rate for the image sequence
+    // .input(audioPath) // Add audio
+    // .output('output.webm') // Output file
+    // .outputOptions([
+    //     '-filter_complex',
+    //     '[0:v][1:v]overlay=(W-w)/2:(H-h)+125', // Overlay images onto base video
+    //     '-c:v libx264', // Encode video with H.264 codec
+    //     '-c:a aac', // Encode audio with AAC codec
+    // ])
+    // .on('end', () => console.log('Video created!'))
+    // .on('error', (err) => console.error('Error:', err))
+    // .run();
                 
-                await fs.rm("./frames");
+                // await fs.rm("./movieframes");
                 
               } else if (statusResponse.data.status === 'failed') {
                 console.error('Transcription failed.');
@@ -115,7 +144,6 @@ async function generateLipSyncVideo(
                 console.log('Processing...');
                 await new Promise(resolve => setTimeout(resolve, 5000));
               }
-              
 
             }
           } catch (error) {
@@ -149,15 +177,14 @@ async function createFrames(phoneme_list, fps, audioPath) {
       // Calculate how many frames this phoneme needs based on FPS
       const frameCount = Math.round((phonemeEndTime - phonemeStartTime) * fps); // Frames for this phoneme
 
-      
-      // Determine which .jpg file to use for this phoneme
-      const visemePath = getVisemeFilePath(phoneme.replace(/\d+/g, "")); // Map phoneme to .jpg file
+      // Determine which .png file to use for this phoneme
+      const visemePath = getVisemeFilePath(phoneme.replace(/\d+/g, "")); // Map phoneme to .png file
       
       for (let i = 0; i < frameCount; i++) {
-        // Save the frame as an image file (using the .jpg directly)
-        const framePath = `./movieframes/frame-${sanitizedFilename}-${numFrames}.jpg`;
+        // Save the frame as an image file (using the .png directly)
+        const framePath = `./movieframes/frame-${sanitizedFilename}-${numFrames}.png`;
         console.log("framecound: " + numFrames)
-        fs.copyFileSync(visemePath, framePath); // Copy the viseme .jpg to the frame path
+        fs.copyFileSync(visemePath, framePath); // Copy the viseme .png to the frame path
         frames.push(framePath); // Store the frame path for later
         numFrames++;
       }
@@ -165,60 +192,60 @@ async function createFrames(phoneme_list, fps, audioPath) {
   });
 }
 
-// Map phoneme to its corresponding .jpg file
+// Map phoneme to its corresponding .png file
 function getVisemeFilePath(phoneme) {
     
       // if (['aa', 'ah', 'aw', 'ay', 'ih', 'iy', 'w', 'hh'].includes(phoneme.toLowerCase())) {
     if (['aa', 'ah', 'aw', 'ay', 'ih', 'iy', 'hh', 'ae', 'ao'].includes(phoneme.toLowerCase())) {
-        return './frames/aei.jpg';
+        return './frames/aei.png';
         
     // } else if (['ae', 'eh', 'ey', 's', 'z', 'l', 'sh', 'zh'].includes(phoneme.toLowerCase())) {
     } else if (['f', 'v'].includes(phoneme.toLowerCase())) {
-      return './frames/fv.jpg';
+      return './frames/fv.png';
 
     // } else if (['ao', 'ow', 'oy', 'f', 'v', 'm'].includes(phoneme.toLowerCase())) {
     } else if (['ow', 'oy'].includes(phoneme.toLowerCase())) {
-      return './frames/o.jpg';
+      return './frames/o.png';
 
     // (ch j sh) 4) sh zh ch jh
     // } else if (['uw', 'uh'].includes(phoneme.toLowerCase())) {
     } else if (['sh', 'zh', 'ch', 'jh'].includes(phoneme.toLowerCase())) {
-      return './frames/ch_j_sh.jpg';
+      return './frames/ch_j_sh.png';
 
     // } else if (['p', 'b'].includes(phoneme.toLowerCase())) {
     } else if (['l'].includes(phoneme.toLowerCase())) {
-      return './frames/l.jpg';
+      return './frames/l.png';
 
       // (b m p) 6) m p b
     // } else if (['ch', 'd', 'dh', 'jh', 't'].includes(phoneme.toLowerCase())) {
     } else if (['m', 'p', 'b'].includes(phoneme.toLowerCase())) {
-      return './frames/bmp.jpg';
+      return './frames/bmp.png';
 
     // (e) 7) eh ey 
     // } else if (['g', 'k', 'ng'].includes(phoneme.toLowerCase())) {
     } else if (['eh', 'ey'].includes(phoneme.toLowerCase())) {
-      return './frames/e.jpg';
+      return './frames/e.png';
 
     // (c d g k n s t x y z) 8) s z d dh t g k ng n y
     // } else if (['n', 'r', 'th', 'y'].includes(phoneme.toLowerCase())) {
     } else if (['s', 'z', 'd', 'dh', 't', 'g', 'k', 'ng', 'n', 'y'].includes(phoneme.toLowerCase())) {
-      return './frames/cdgknstxyz.jpg';
+      return './frames/cdgknstxyz.png';
 
     // } else if (['er'].includes(phoneme.toLowerCase())) {
     } else if (['uw', 'uh'].includes(phoneme.toLowerCase())) {
-      return './frames/u.jpg';
+      return './frames/u.png';
 
     } else if (['r', 'er'].includes(phoneme.toLowerCase())) {
-      return './frames/r.jpg';
+      return './frames/r.png';
       
     } else if (['th'].includes(phoneme.toLowerCase())) {
-      return './frames/th.jpg';
+      return './frames/th.png';
 
     } else if (['w'].includes(phoneme.toLowerCase())) {
-      return './frames/qw.jpg';
+      return './frames/qw.png';
 
     } else {
-      return './frames/cdgknstxyz.jpg';  // Default image if phoneme is not found
+      return './frames/cdgknstxyz.png';  // Default image if phoneme is not found
     }
 
     // (a e i) 1) aa ah aw ay ih iy hh ae ao
