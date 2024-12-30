@@ -55,7 +55,7 @@ TODO:
     - both .png and .jpg work ok new update just kidding .jpg does not work quite so well hahaha ( 2 days of coding gone out the window :C )
     
     - next get video together
-        - go through every frame and adjust its ratios so that it fits with 1080x1920 and remove its background as well
+        - adjust cat height / proportions in video so it is correct then work on vvv
         - move character pub / sub function into a different file then export at the top?
         - then work backwards to add stuff in .character pub / sub callback function to create video
     - do stuff for actual video content
