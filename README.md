@@ -54,13 +54,13 @@ TODO:
     - remove background w/ adobe
     - both .png and .jpg work ok new update just kidding .jpg does not work quite so well hahaha ( 2 days of coding gone out the window :C )
     
+    - ADD GARBAGE CLEAN UP CODE FOR TEMP FILES
+
     - next get video together
-        - adjust cat height / proportions in video so it is correct then work on vvv
         - move character pub / sub function into a different file then export at the top?
         - then work backwards to add stuff in .character pub / sub callback function to create video
     - do stuff for actual video content
     - put stuff from character.js into editVideo or something, just get rid of it basically cus its only like 1 command basically
-    - break apart visemes.js into like 3 seperate parts (generate vid, create frames, map visemes to files)
     - might be pretty close to being done tho I forgot
  (for self) eventually export setup / admin / other firebase stuff to utils
 - also tailor gemini prompt + tailor properties and stuff (look bat at like 69 in createScript.js idk what that does)
