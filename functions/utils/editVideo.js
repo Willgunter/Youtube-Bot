@@ -8,7 +8,6 @@ const path = require('path');
 ffmpeg.setFfmpegPath("ffmpeg");
 ffmpeg.setFfprobePath("ffprobe");
 
-// vvv
 // https://www.gyan.dev/ffmpeg/builds/
 async function editVideo(audioPath, videoPath, outputPath) {
     return new Promise((resolve, reject) => {

@@ -106,36 +106,17 @@ async function generateLipSyncVideo(
                 .output('output.mp4')
                 .outputOptions([
                     '-filter_complex',
-                    '[0:v][1:v]overlay=0:0',
+                    '[0:v][1:v]overlay=(W-w)/2:(H-h)+125',
                   ]) 
                 .on('end', () => console.log('Video created!'))
+                .on('progress', (progress) => { 
+                  console.log(`Processing: ${Math.round(progress.percent)}% done`);
+                })
                 // .on('stderr', (stderrLine) => console.log('FFmpeg stderr: ' + stderrLine)) // Capture errors here
                 // .on('error', (err) => console.error('Error:', err)) // Handle FFmpeg process errors
                 .run();
-                // works --> // ffmpeg -i short_subway_fixed.mp4 -i frames/aei.png -filter_complex "[0:v][1:v]overlay=0:0" output.mp4
-                // ffmpeg -i short_subway_fixed.mp4 -i movieframes/frame-12_29_2024_19_42_24-24.png -filter_complex "[0:v][1:v]overlay=0:0" output.mp4
-                // ffmpeg -i short_subway_fixed.mp4 -framerate 30 -i movieframes/frame-12_29_2024_19_42_24-%d.png -filter_complex "[0:v][1:v]overlay=0:0" output.mp4
-                // ffmpeg -thread_queue_size 1024 -framerate 30 -i movieframes/frame-12_30_2024_24_34_17-%d.png output.mp4 -loglevel verbose
-                // ffmpeg -framerate 30 -i movieframes/frame-12_30_2024_24_34_17-
-                // ffmpeg -framerate 30 -i image%03d.png -c:v libx264 -r 30 -pix_fmt yuv420p output.mp4
-                // %d.png -c:v libx264 -r 30 -pix_fmt yuv420p output.mp4
-               
 
-    //             ffmpeg('./shortened_subway_surfers_clip.webm') // Input 0: Base video
-    // ls frame-*.png
-    // .input(`./movieframes/frame-${sanitizedFilename}-%d.png`) // Input 1: Image sequence
-    // .inputFPS(fps) // Set the frame rate for the image sequence
-    // .input(audioPath) // Add audio
-    // .output('output.webm') // Output file
-    // .outputOptions([
-    //     '-filter_complex',
-    //     '[0:v][1:v]overlay=(W-w)/2:(H-h)+125', // Overlay images onto base video
-    //     '-c:v libx264', // Encode video with H.264 codec
-    //     '-c:a aac', // Encode audio with AAC codec
-    // ])
-    // .on('end', () => console.log('Video created!'))
-    // .on('error', (err) => console.error('Error:', err))
-    // .run();
+                // ls frame-*.png
                 
                 // await fs.rm("./movieframes");
                 

@@ -1,12 +1,17 @@
-const sanitizedFilename = getCurrentDateTime();
+const fs = require('fs');
+const ffmpeg = require('fluent-ffmpeg');
+const createFrames = require('./createFrames');
+const axios = require('axios');
+const CMUDict = require('cmudict').CMUDict;
+require('dotenv').config();
+
+const audioPath = './9_second_audio.mp3';
 
 async function generateLipSyncVideo(
     // audioPath, spriteSheetPath, phonemeData, 
+    sanitizedFilename,
     fps = 24) {
-        const axios = require('axios');
-        const fs = require('fs');
         const API_KEY = process.env.ASSEMBLYAI;
-        const audioPath = './shortened-audiomp3.mp3';
         
         let phoneme_list = [];
         // async function transcribeAudio() {
@@ -59,6 +64,8 @@ async function generateLipSyncVideo(
                 console.log(statusResponse);
                 // Check and print phonemes
                 if (statusResponse.data.words) {
+                  console.log("hello breakpoint1");
+
                   let cmudict = new CMUDict();
                   statusResponse.data.words.forEach(word => {
 
@@ -79,22 +86,24 @@ async function generateLipSyncVideo(
 
                   });
                 }
+                console.log("hello breakpoint");
                 phoneme_list.forEach(word => {
                   word.sounds.forEach(sounds =>{
                     console.log(`${sounds}`)//+${word.start_time}+${word.end_time}`)
                   })
                 })
-                createFrames(phoneme_list, 24, './shortened-audiomp3.mp3');
+                createFrames(phoneme_list, sanitizedFilename, 24, './shortened-audiomp3.mp3');
                 // Use FFmpeg to combine frames into a video with audio
                 ffmpeg()
                 .input(`./movieframes/frame-${sanitizedFilename}-%d.jpg`)
                 .inputFPS(fps)
                 .input(audioPath)
-                .output('output.webm')
+                .output('outputcharacter.webm')
                 .on('end', () => console.log('Video created!'))
+                .on('progress', (progress) => { console.log(`Processing: ${Math.round(progress.percent)}% done`); })
                 .run();
                 
-                await fs.rm("./frames");
+                // await fs.rm("./frames");
                 
               } else if (statusResponse.data.status === 'failed') {
                 console.error('Transcription failed.');

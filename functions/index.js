@@ -29,16 +29,16 @@ require('dotenv').config();
 const os = require('os');
 const path = require('path');
 
-const createScript = require("./utils/script/createScript.js"); // not using to save on api requests
-const fetchYoutube = require("./utils/script/fetchYoutubeTrendingData.js");
-
-
 const generateSubtitles = require('./utils/captions/generateCaptionTimingFile.js');
 const addCaptions = require('./utils/captions/addCaptions.js');
 
+const createScript = require("./utils/script/createScript.js"); // not using to save on api requests
+const fetchYoutube = require("./utils/script/fetchYoutubeTrendingData.js");
+
+const generateLipSyncVideo = require("./utils/lipsync/generateLipSyncVideo.js")
+
 const getCurrentDateTime = require('./utils/currentDateTime.js');
 const generateTTS = require('./utils/generateTTS.js');
-const speechUpload = require('./utils/speechUpload.js'); // not using because it is not uploaded to cloud yet
 const editVideo = require('./utils/editVideo.js');
 
 // firebase emulators:start
@@ -68,12 +68,15 @@ exports.coreLogic = onRequest({
     minInstances: 0,    // Minimum number of instances
     maxInstances: 100   // Maximum number of instances
 }, async (request, response) => {
-        // DELETE LATER
+    // DELETE LATER
+    
+    currentTime = getCurrentDateTime();
 
     try {
         // Trigger Function B via Pub/Sub
         const message = { task: 'addCharacter', 
             // captionsFileName: `./delete_later/withCaptions${currentTime}.mp4`, 
+            currentTime: currentTime
             // webmFileName: `./delete_later/aswebm${currentTime}.webm`
              };
 
@@ -91,108 +94,109 @@ exports.coreLogic = onRequest({
     }
 
     console.error("idk yet");
+    // response.send("stop");
     // DELETE LATER
         // TODO comment for testing (so we don't waste gemini)
-        let responseFromGemini;
-        let title;
+//         let responseFromGemini;
+//         let title;
 
-        try {
-            do {
-                console.log("aosidhf;");
-                // - Include potential B-roll or visual suggestions in parentheses
+//         try {
+//             do {
+//                 console.log("aosidhf;");
+//                 // - Include potential B-roll or visual suggestions in parentheses
 
-            const youtubeTrendingStuff = await fetchYoutube();
-            const scriptResponse = await createScript(youtubeTrendingStuff);
+//             const youtubeTrendingStuff = await fetchYoutube();
+//             const scriptResponse = await createScript(youtubeTrendingStuff);
             
-            console.log(`Script: ${scriptResponse.script}`)
-            responseFromGemini = scriptResponse.script;
-            title = scriptResponse.title;
+//             console.log(`Script: ${scriptResponse.script}`)
+//             responseFromGemini = scriptResponse.script;
+//             title = scriptResponse.title;
 
-        } while (title == undefined || title.length > 100); // repeats if title is too long (might change later)
-        } catch (error) {
-            // logger.error("Error creating script: ", error);
-            response.status(500).send("An error occurred");
-        }
-    console.log(`Scrip555t: ${responseFromGemini}`)
+//         } while (title == undefined || title.length > 100); // repeats if title is too long (might change later)
+//         } catch (error) {
+//             // logger.error("Error creating script: ", error);
+//             response.status(500).send("An error occurred");
+//         }
+//     // response.status(500).send("stop")
+//     console.log(`Scrip555t: ${responseFromGemini}`)
     
-    // TODO: for testing 
-//     responseFromGemini = `I tried starting a hot air balloon business, but it never took off.
-// I used to hate facial hair... but then I grew fond of it.
-// I'm reading a book about anti-gravity. It's impossible to put down. `;
+//     // TODO: for testing 
+// //     responseFromGemini = `I tried starting a hot air balloon business, but it never took off.
+// // I used to hate facial hair... but then I grew fond of it.
+// // I'm reading a book about anti-gravity. It's impossible to put down. `;
 
-    currentTime = getCurrentDateTime();
-    // ttsAudioPath = path.join(os.tmpdir(), "YoutubeBotFiles/ttsAudio" + currentTime + ".mp3");
-    ttsAudioPath = "./delete_later/ttsAudio" + currentTime + ".mp3";
-    // npm install firebase-functions-test@latest --save-dev npm isntall firebase-functions@latest firebase-admin@latest --save
+//     // ttsAudioPath = path.join(os.tmpdir(), "YoutubeBotFiles/ttsAudio" + currentTime + ".mp3");
+//     ttsAudioPath = "./delete_later/ttsAudio" + currentTime + ".mp3";
+//     // npm install firebase-functions-test@latest --save-dev npm isntall firebase-functions@latest firebase-admin@latest --save
 
-    console.log("basic stuff completed");
+//     console.log("basic stuff completed");
 
-    try {
+//     try {
 
-        // 1) script 2) file path
-        // generates tts audio
-        await generateTTS(responseFromGemini, ttsAudioPath);
+//         // 1) script 2) file path
+//         // generates tts audio
+//         await generateTTS(responseFromGemini, ttsAudioPath);
 
-        // uploads .mp3 file to firebase bucket
-        // await speechUpload(localFilePath, currentTime, bucket);
-        // console.log("speechUpload completed");
+//         // uploads .mp3 file to firebase bucket
+//         // await speechUpload(localFilePath, currentTime, bucket);
+//         // console.log("speechUpload completed");
 
-        // https://www.gyan.dev/ffmpeg/builds/ <-- if we decide on something else later
-        // const editedVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/edited" + currentTime + ".mp4");
-        const editedVideoFilePath = "./delete_later/edited" + currentTime + ".webm";
+//         // https://www.gyan.dev/ffmpeg/builds/ <-- if we decide on something else later
+//         // const editedVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/edited" + currentTime + ".mp4");
+//         const editedVideoFilePath = "./delete_later/edited" + currentTime + ".webm";
 
-        // const originalVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/minecraft.mp4")
-        const originalVideoFilePath = "./videos/surfer-1.mp4";
-        await editVideo(ttsAudioPath, originalVideoFilePath, editedVideoFilePath);
+//         // const originalVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/minecraft.mp4")
+//         const originalVideoFilePath = "./videos/surfer-1.mp4";
+//         await editVideo(ttsAudioPath, originalVideoFilePath, editedVideoFilePath);
 
-        // transcribe video
-        // const srtOutputPath = path.join(os.tmpdir(), `YoutubeBotFiles/transcription${currentTime}.srt`);
-        const srtOutputPath = `./delete_later/transcription${currentTime}.srt`;
-        await generateSubtitles(editedVideoFilePath, srtOutputPath);
-        // console.log(`Transcription saved to: ${srtOutputPath}`);
+//         // transcribe video
+//         // const srtOutputPath = path.join(os.tmpdir(), `YoutubeBotFiles/transcription${currentTime}.srt`);
+//         const srtOutputPath = `./delete_later/transcription${currentTime}.srt`;
+//         await generateSubtitles(editedVideoFilePath, srtOutputPath);
+//         // console.log(`Transcription saved to: ${srtOutputPath}`);
 
-        // works until here
+//         // works until here
 
-        // const videoWithCaptionsPath = path.join(os.tmpdir(), `YoutubeBotFiles/withCaptions${currentTime}.mp4`);
-        const videoWithCaptionsPath = `./delete_later/withCaptions${currentTime}.mp4`;
-        // CAPTIONING
-        await addCaptions(editedVideoFilePath, videoWithCaptionsPath);
-        // CAPTIONING
+//         // const videoWithCaptionsPath = path.join(os.tmpdir(), `YoutubeBotFiles/withCaptions${currentTime}.mp4`);
+//         const videoWithCaptionsPath = `./delete_later/withCaptions${currentTime}.mp4`;
+//         // CAPTIONING
+//         await addCaptions(editedVideoFilePath, videoWithCaptionsPath);
+//         // CAPTIONING
 
-        // console.log(`Subtitles successfully added to: ${videoWithSubtitlesPath}`);
+//         // console.log(`Subtitles successfully added to: ${videoWithSubtitlesPath}`);
         
-        // const webmFile = `./delete_later/aswebm${currentTime}.webm`
-        // ffmpeg(videoWithCaptionsPath)
-        //   .output(webmFile)
+//         // const webmFile = `./delete_later/aswebm${currentTime}.webm`
+//         // ffmpeg(videoWithCaptionsPath)
+//         //   .output(webmFile)
       
-        // SEND videoWithCaptionsPath and webmFile OVER TO CHARACTER FUNCTION
+//         // SEND videoWithCaptionsPath and webmFile OVER TO CHARACTER FUNCTION
         
-        try {
-            // Trigger Function B via Pub/Sub
-            const message = { task: 'addCharacter', 
-                captionsFileName: `./delete_later/withCaptions${currentTime}.mp4`, 
-                webmFileName: `./delete_later/aswebm${currentTime}.webm` };
+//         try {
+//             // Trigger Function B via Pub/Sub
+//             const message = { task: 'addCharacter', 
+//                 captionsFileName: `./delete_later/withCaptions${currentTime}.mp4`, 
+//                 webmFileName: `./delete_later/aswebm${currentTime}.webm` };
 
-            await pubSubClient.topic('add-character').publishMessage({
-                data: Buffer.from(JSON.stringify(message)),
-            });
+//             await pubSubClient.topic('add-character').publishMessage({
+//                 data: Buffer.from(JSON.stringify(message)),
+//             });
             
-            console.log('Function B triggered via Pub/Sub');
+//             console.log('Function B triggered via Pub/Sub');
             
-            // Function A exits after triggering Function B
-            response.status(200).send('Function A is done.');
-        } catch (error) {
-            console.error('Error in Function A:', error);
-            response.status(500).send('Failed to execute Function A');
-        }
+//             // Function A exits after triggering Function B
+//             response.status(200).send('Function A is done.');
+//         } catch (error) {
+//             console.error('Error in Function A:', error);
+//             response.status(500).send('Failed to execute Function A');
+//         }
 
-    } catch (error) {
-        console.error("Failed to upload file:", error);
-        response.status(500).send("Failed to upload file.");
-    } finally {
-        // fs.unlinkSync(ttsPath);
-        // don't forget to unlinkSync (delete) all the other files
-    }
+//     } catch (error) {
+//         console.error("Failed to upload file:", error);
+//         response.status(500).send("Failed to upload file.");
+//     } finally {
+//         // fs.unlinkSync(ttsPath);
+//         // don't forget to unlinkSync (delete) all the other files
+//     }
 
 });
 
@@ -212,27 +216,15 @@ const { onMessagePublished } = require('firebase-functions/v2/pubsub');
 exports.character = onMessagePublished('add-character', (event) => {
     //   try {
         // Decode the message from base64
-        // const message = event.data.message ? Buffer.from(event.data.message.data, 'base64').toString() : null;
+        const message = event.data.message ? Buffer.from(event.data.message.data, 'base64').toString() : null;
         
-        // console.log('Received message:', message);
+        const currentTime = message.currentTime;
+        console.log('Received message:', message);
         console.log('Processing task:');
+        generateLipSyncVideo(currentTime);
 
         try {
 
-            ffmpeg(videoWithCaptionsPath)
-            .output(webmFile)
-            .videoCodec('libvpx-vp9')  // Use VP9 codec for WebM
-            .audioCodec('libopus')     // Use Opus codec for audio
-            .on('progress', (progress) => {
-                console.log(`Processing: ${progress.percent.toFixed(2)}% done`);
-            })
-            .on('end', () => {
-                console.log('Conversion completed successfully!');
-            })
-            .on('error', (err) => {
-                console.error('Error during conversion:', err);
-            })
-            .run();
         } catch {
             console.error("bad")
         }
