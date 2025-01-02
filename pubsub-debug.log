@@ -1,17 +1,17 @@
 This is the Google Pub/Sub fake.
 Implementation may be incomplete or differ from the real system.
-Dec 22, 2024 3:17:05 AM com.google.cloud.pubsub.testing.v1.Main main
+Jan 02, 2025 2:19:07 AM com.google.cloud.pubsub.testing.v1.Main main
 INFO: IAM integration is disabled. IAM policy methods and ACL checks are not supported
 SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
 SLF4J: Defaulting to no-operation (NOP) logger implementation
 SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-Dec 22, 2024 3:17:06 AM com.google.cloud.pubsub.testing.v1.Main main
+Jan 02, 2025 2:19:08 AM com.google.cloud.pubsub.testing.v1.Main main
 INFO: Server started, listening on 8085
-Dec 22, 2024 3:17:12 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jan 02, 2025 2:19:15 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected HTTP/2 connection.
-Dec 22, 2024 3:17:28 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jan 02, 2025 2:19:31 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected HTTP/2 connection.
-Dec 22, 2024 3:18:20 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jan 02, 2025 2:25:46 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected HTTP/2 connection.
-Dec 22, 2024 3:18:58 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Jan 02, 2025 2:27:12 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected HTTP/2 connection.
