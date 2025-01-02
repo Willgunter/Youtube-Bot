@@ -102,10 +102,10 @@ async function editVideo(audioPath, videoPath, outputPath) {
                     console.log(`Output target dimensions: ${targetWidth}x${targetHeight}`);
                 })
                 .on('progress', (progress) => {
-                    console.log(`Processing: ${Math.round(progress.percent)}% done`);
+                    console.log(`Processing (editVideo.js): ${progress.percent.toFixed(2)}% done`);
                 })
                 .on('error', (err) => {
-                    console.error('Error during processing:', err);
+                    console.error('Error during processing (editVideo.js):', err);
                     reject(err);
                 })
                 .on('end', () => {

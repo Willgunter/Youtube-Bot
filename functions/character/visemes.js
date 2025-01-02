@@ -110,7 +110,7 @@ async function generateLipSyncVideo(
                   ]) 
                 .on('end', () => console.log('Video created!'))
                 .on('progress', (progress) => { 
-                  console.log(`Processing: ${Math.round(progress.percent)}% done`);
+                  console.log(`Processing (visemes.js): ${progress.percent.toFixed(2)}% done`);
                 })
                 // .on('stderr', (stderrLine) => console.log('FFmpeg stderr: ' + stderrLine)) // Capture errors here
                 // .on('error', (err) => console.error('Error:', err)) // Handle FFmpeg process errors

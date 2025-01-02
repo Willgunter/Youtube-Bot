@@ -5,10 +5,9 @@ const axios = require('axios');
 const CMUDict = require('cmudict').CMUDict;
 require('dotenv').config();
 
-const audioPath = './9_second_audio.mp3';
-
 async function generateLipSyncVideo(
-    // audioPath, spriteSheetPath, phonemeData, 
+    audioPath,
+    videoPath, 
     sanitizedFilename,
     fps = 24) {
         const API_KEY = process.env.ASSEMBLYAI;
@@ -93,10 +92,10 @@ async function generateLipSyncVideo(
                   })
                 })
                 
-                createFrames(phoneme_list, sanitizedFilename, 24, './shortened-audiomp3.mp3');
+                createFrames(phoneme_list, sanitizedFilename, 24, audioPath);
                 
                 // Use FFmpeg to combine frames into a video with audio
-                ffmpeg(`./short_subway_fixed.mp4`)
+                ffmpeg(videoPath)
                 .input(`./movieframes/frame-${sanitizedFilename}-%d.png`)
                 .inputFPS(fps)
                 .input(audioPath)
@@ -106,7 +105,7 @@ async function generateLipSyncVideo(
                   '[0:v][1:v]overlay=(W-w)/2:(H-h)+125',
                 ])
                 .on('end', () => console.log('Video created!'))
-                .on('progress', (progress) => { console.log(`Processing: ${Math.round(progress.percent)}% done`); })
+                .on('progress', (progress) => { console.log(`Processing: ${progress.percent.toFixed(2)}% done`); })
                 .run();
                 
                 // await fs.rm("./frames");

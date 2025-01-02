@@ -70,133 +70,122 @@ exports.coreLogic = onRequest({
 }, async (request, response) => {
     // DELETE LATER
     
-    currentTime = getCurrentDateTime();
-
-    try {
-        // Trigger Function B via Pub/Sub
-        const message = { task: 'addCharacter', 
-            // captionsFileName: `./delete_later/withCaptions${currentTime}.mp4`, 
-            currentTime: currentTime
-            // webmFileName: `./delete_later/aswebm${currentTime}.webm`
-             };
-
-        pubSubClient.topic('add-character').publishMessage({
-            data: Buffer.from(JSON.stringify(message)),
-        });
-        
-        console.log('Function B triggered via Pub/Sub');
-        
-        // Function A exits after triggering Function B
-        response.status(200).send('Function A is done.');
-    } catch (error) {
-        console.error('Error in Function A:', error);
-        response.status(500).send('Failed to execute Function A');
-    }
+    const currentTime = getCurrentDateTime();
 
     console.error("idk yet");
     // response.send("stop");
     // DELETE LATER
         // TODO comment for testing (so we don't waste gemini)
-//         let responseFromGemini;
-//         let title;
+        let responseFromGemini;
+        let title;
 
-//         try {
-//             do {
-//                 console.log("aosidhf;");
-//                 // - Include potential B-roll or visual suggestions in parentheses
-
-//             const youtubeTrendingStuff = await fetchYoutube();
-//             const scriptResponse = await createScript(youtubeTrendingStuff);
+        try {
+            do {
+                console.log("aosidhf;");
+                
+            // - Include potential B-roll or visual suggestions in parentheses
+            const youtubeTrendingStuff = await fetchYoutube();
+            const scriptResponse = await createScript(youtubeTrendingStuff);
             
-//             console.log(`Script: ${scriptResponse.script}`)
-//             responseFromGemini = scriptResponse.script;
-//             title = scriptResponse.title;
+            console.log(`Script: ${scriptResponse.script}`)
+            responseFromGemini = scriptResponse.script;
+            title = scriptResponse.title;
 
-//         } while (title == undefined || title.length > 100); // repeats if title is too long (might change later)
-//         } catch (error) {
-//             // logger.error("Error creating script: ", error);
-//             response.status(500).send("An error occurred");
-//         }
-//     // response.status(500).send("stop")
-//     console.log(`Scrip555t: ${responseFromGemini}`)
+        } while (title == undefined || title.length > 100); // repeats if title is too long (might change later)
+        } catch (error) {
+            // logger.error("Error creating script: ", error);
+            response.status(500).send("An error occurred");
+        }
+    // response.status(500).send("stop")
+    console.log(`Scrip555t: ${responseFromGemini}`)
     
 //     // TODO: for testing 
 // //     responseFromGemini = `I tried starting a hot air balloon business, but it never took off.
 // // I used to hate facial hair... but then I grew fond of it.
 // // I'm reading a book about anti-gravity. It's impossible to put down. `;
 
-//     // ttsAudioPath = path.join(os.tmpdir(), "YoutubeBotFiles/ttsAudio" + currentTime + ".mp3");
-//     ttsAudioPath = "./delete_later/ttsAudio" + currentTime + ".mp3";
+    // ttsAudioPath = path.join(os.tmpdir(), "YoutubeBotFiles/ttsAudio" + currentTime + ".mp3");
+    const ttsAudioPath = "./delete_later/ttsAudio" + currentTime + ".mp3";
 //     // npm install firebase-functions-test@latest --save-dev npm isntall firebase-functions@latest firebase-admin@latest --save
 
-//     console.log("basic stuff completed");
+    console.log("basic stuff completed");
 
-//     try {
+    try {
 
 //         // 1) script 2) file path
 //         // generates tts audio
-//         await generateTTS(responseFromGemini, ttsAudioPath);
+        await generateTTS(responseFromGemini, ttsAudioPath);
 
 //         // uploads .mp3 file to firebase bucket
-//         // await speechUpload(localFilePath, currentTime, bucket);
-//         // console.log("speechUpload completed");
+        // await speechUpload(localFilePath, currentTime, bucket);
+        // console.log("speechUpload completed");
 
 //         // https://www.gyan.dev/ffmpeg/builds/ <-- if we decide on something else later
 //         // const editedVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/edited" + currentTime + ".mp4");
-//         const editedVideoFilePath = "./delete_later/edited" + currentTime + ".webm";
+        const editedVideoFilePath = "./delete_later/edited" + currentTime + ".webm";
 
 //         // const originalVideoFilePath = path.join(os.tmpdir(), "YoutubeBotFiles/minecraft.mp4")
-//         const originalVideoFilePath = "./videos/surfer-1.mp4";
-//         await editVideo(ttsAudioPath, originalVideoFilePath, editedVideoFilePath);
+        const originalVideoFilePath = "./videos/surfer-1.mp4";
+        await editVideo(ttsAudioPath, originalVideoFilePath, editedVideoFilePath);
 
 //         // transcribe video
-//         // const srtOutputPath = path.join(os.tmpdir(), `YoutubeBotFiles/transcription${currentTime}.srt`);
-//         const srtOutputPath = `./delete_later/transcription${currentTime}.srt`;
-//         await generateSubtitles(editedVideoFilePath, srtOutputPath);
-//         // console.log(`Transcription saved to: ${srtOutputPath}`);
+        // const srtOutputPath = path.join(os.tmpdir(), `YoutubeBotFiles/transcription${currentTime}.srt`);
+        const srtOutputPath = `./delete_later/transcription${currentTime}.srt`;
+        await generateSubtitles(editedVideoFilePath, srtOutputPath);
+        console.log(`Transcription saved to: ${srtOutputPath}`);
 
 //         // works until here
 
-//         // const videoWithCaptionsPath = path.join(os.tmpdir(), `YoutubeBotFiles/withCaptions${currentTime}.mp4`);
-//         const videoWithCaptionsPath = `./delete_later/withCaptions${currentTime}.mp4`;
+        // const videoWithCaptionsPath = path.join(os.tmpdir(), `YoutubeBotFiles/withCaptions${currentTime}.mp4`);
+        const videoWithCaptionsPath = `./delete_later/withCaptions${currentTime}.mp4`;
 //         // CAPTIONING
-//         await addCaptions(editedVideoFilePath, videoWithCaptionsPath);
+            // Note: editedVideoFilePath is input, videoWithCaptionsPath is output video
+        await addCaptions(editedVideoFilePath, videoWithCaptionsPath);
 //         // CAPTIONING
 
-//         // console.log(`Subtitles successfully added to: ${videoWithSubtitlesPath}`);
+        // console.log(`Subtitles successfully added to: ${videoWithSubtitlesPath}`);
         
-//         // const webmFile = `./delete_later/aswebm${currentTime}.webm`
-//         // ffmpeg(videoWithCaptionsPath)
-//         //   .output(webmFile)
+        const webmFile = `./delete_later/aswebm${currentTime}.webm`
+        ffmpeg(videoWithCaptionsPath)
+          .output(webmFile)
+          .on('start', () => console.log('Conversion started...'))
+          .on('progress', (progress) => console.log(`Progress (mp4 to webm conversion): ${progress.percent.toFixed(2)}%`))
+          .on('end', () => console.log('Conversion completed successfully!'))
+          .on('error', (err) => console.error('Error during conversion:', err))
+          .run();
       
-//         // SEND videoWithCaptionsPath and webmFile OVER TO CHARACTER FUNCTION
-        
-//         try {
-//             // Trigger Function B via Pub/Sub
-//             const message = { task: 'addCharacter', 
-//                 captionsFileName: `./delete_later/withCaptions${currentTime}.mp4`, 
-//                 webmFileName: `./delete_later/aswebm${currentTime}.webm` };
-
-//             await pubSubClient.topic('add-character').publishMessage({
-//                 data: Buffer.from(JSON.stringify(message)),
-//             });
+        // SEND videoWithCaptionsPath and webmFile OVER TO CHARACTER FUNCTION
+        try {
             
-//             console.log('Function B triggered via Pub/Sub');
+            // Trigger Function B via Pub/Sub
+            const message = { 
             
-//             // Function A exits after triggering Function B
-//             response.status(200).send('Function A is done.');
-//         } catch (error) {
-//             console.error('Error in Function A:', error);
-//             response.status(500).send('Failed to execute Function A');
-//         }
+                task: 'addCharacter', 
+                currentTime: currentTime,
+                webmFileName: webmFile,
+                audioPath: ttsAudioPath
+            };
+    
+            pubSubClient.topic('add-character').publishMessage({
+                data: Buffer.from(JSON.stringify(message)),
+            });
+            
+            console.log('Function B triggered via Pub/Sub');
+            
+            // Function A exits after triggering Function B
+            response.status(200).send('Function A is done.');
+        } catch (error) {
+            console.error('Error in Function A:', error);
+            response.status(500).send('Failed to execute Function A');
+        }
 
-//     } catch (error) {
-//         console.error("Failed to upload file:", error);
-//         response.status(500).send("Failed to upload file.");
-//     } finally {
-//         // fs.unlinkSync(ttsPath);
-//         // don't forget to unlinkSync (delete) all the other files
-//     }
+    } catch (error) {
+        console.error("Failed to upload file:", error);
+        response.status(500).send("Failed to upload file.");
+    } finally {
+        // fs.unlinkSync(ttsPath);
+        // don't forget to unlinkSync (delete) all the other files
+    }
 
 });
 
@@ -214,27 +203,25 @@ const { onMessagePublished } = require('firebase-functions/v2/pubsub');
 // 1) start emulator check
 // 2) curl -X PUT http://localhost:8085/v1/projects/bot-e5092/topics/add-character
 exports.character = onMessagePublished('add-character', (event) => {
-    //   try {
+
+    try {
         // Decode the message from base64
         const messageData = event.data.message ? Buffer.from(event.data.message.data, 'base64').toString() : null;
         const message = JSON.parse(messageData);
-
-        const currentTime = message.currentTime;
         
         console.log('Received message:', message);
-        console.log('currentTime variable:', currentTime);
-
+        console.log(`AudioPath: ${message.audioPath}`)
+        console.log(`WebmFileName: ${message.webmFileName}`)
+        console.log('currentTime variable:', message.currentTime);
+        
         console.log('Processing task:');
-
-        generateLipSyncVideo(currentTime);
-
-        try {
-
+        
+        generateLipSyncVideo(message.audioPath, message.webmFileName, message.currentTime);
+        
         } catch {
             console.error("bad")
         }
-    // console.error('Error processing Pub/Sub message:', error);
-//   }
+    
 });
     // .timeoutSeconds(540)  // Set timeout within the function declaration
     // .memory('2GiB');      // Optionally increase memory if needed
