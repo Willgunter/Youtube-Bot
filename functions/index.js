@@ -216,11 +216,16 @@ const { onMessagePublished } = require('firebase-functions/v2/pubsub');
 exports.character = onMessagePublished('add-character', (event) => {
     //   try {
         // Decode the message from base64
-        const message = event.data.message ? Buffer.from(event.data.message.data, 'base64').toString() : null;
-        
+        const messageData = event.data.message ? Buffer.from(event.data.message.data, 'base64').toString() : null;
+        const message = JSON.parse(messageData);
+
         const currentTime = message.currentTime;
+        
         console.log('Received message:', message);
+        console.log('currentTime variable:', currentTime);
+
         console.log('Processing task:');
+
         generateLipSyncVideo(currentTime);
 
         try {

@@ -92,13 +92,19 @@ async function generateLipSyncVideo(
                     console.log(`${sounds}`)//+${word.start_time}+${word.end_time}`)
                   })
                 })
+                
                 createFrames(phoneme_list, sanitizedFilename, 24, './shortened-audiomp3.mp3');
+                
                 // Use FFmpeg to combine frames into a video with audio
-                ffmpeg()
-                .input(`./movieframes/frame-${sanitizedFilename}-%d.jpg`)
+                ffmpeg(`./short_subway_fixed.mp4`)
+                .input(`./movieframes/frame-${sanitizedFilename}-%d.png`)
                 .inputFPS(fps)
                 .input(audioPath)
                 .output('outputcharacter.webm')
+                .outputOptions([
+                  '-filter_complex',
+                  '[0:v][1:v]overlay=(W-w)/2:(H-h)+125',
+                ])
                 .on('end', () => console.log('Video created!'))
                 .on('progress', (progress) => { console.log(`Processing: ${Math.round(progress.percent)}% done`); })
                 .run();

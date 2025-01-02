@@ -55,6 +55,7 @@ TODO:
     - both .png and .jpg work ok new update just kidding .jpg does not work quite so well hahaha ( 2 days of coding gone out the window :C )
     
     - ADD GARBAGE CLEAN UP CODE FOR TEMP FILES
+    - improve quality of video if possible
 
     - next get video together
         - move character pub / sub function into a different file then export at the top?
